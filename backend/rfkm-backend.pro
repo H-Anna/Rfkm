@@ -1,12 +1,18 @@
 TEMPLATE = app
 CONFIG += console c++17
 CONFIG -= app_bundle
-CONFIG -= qt
+QT += sql
 
 SOURCES += \
-        main.cpp
+        dbserver.cpp \
+        httpserver.cpp \
+        main.cpp \
+        requestmanager.cpp
 
 LIBS += -pthread -lws2_32
 
 HEADERS += \
-    httplib.h
+    dbserver.h \
+    httplib.h \
+    httpserver.h \
+    requestmanager.h

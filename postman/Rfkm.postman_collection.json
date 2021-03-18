@@ -1,0 +1,213 @@
+{
+	"info": {
+		"_postman_id": "592e5d3d-d2ee-4adb-b2f5-833a9d2410e4",
+		"name": "Rfkm",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Étterem regisztráció",
+			"item": [
+				{
+					"name": "happy root",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"Tipus\": \"etterem\",\r\n\t\"Adatok\":\r\n\t{\r\n\t\t\"Email\": \"finom@csontok.hu\",\r\n\t\t\"Jelszo\": \"teszt_jelszo\",\r\n\t\t\"Nev\": \"Csontok\",\r\n\t\t\"Leiras\": \"Innen csak csontokat lehet rendelni.\",\r\n\t\t\"Cim\": \"8200 Veszprém, Gyanús utca 13.\"\r\n\t}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/regisztracio/etterem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"regisztracio",
+								"etterem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unhappy root - empty request body",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/regisztracio/etterem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"regisztracio",
+								"etterem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unhappy root - incorrect type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"Tipus\": \"vendeg\",\r\n\t\"Adatok\":\r\n\t{\r\n\t\t\"Email\": \"finom@csontok.hu\",\r\n\t\t\"Jelszo\": \"teszt_jelszo\",\r\n\t\t\"Nev\": \"Csontok\",\r\n\t\t\"Leiras\": \"Innen csak csontokat lehet rendelni.\",\r\n\t\t\"Cim\": \"8200 Veszprém, Gyanús utca 13.\"\r\n\t}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/regisztracio/etterem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"regisztracio",
+								"etterem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unhappy root - bad JSON 1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"Tipus\": \"etterem\",\r\n\t\"Adatok\":\r\n\t{\r\n\t\t\"Nev\": \"Csontok\",\r\n\t\t\"Leiras\": \"Innen csak csontokat lehet rendelni.\",\r\n\t\t\"Cim\": \"8200 Veszprém, Gyanús utca 13.\"\r\n\t}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/regisztracio/etterem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"regisztracio",
+								"etterem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unhappy root - bad JSON 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"Tipus\": \"etterem\",\r\n\t\"Adatok\":\r\n\t{\r\n\t\t\"Email\": \"finom@csontok.hu\",\r\n\t\t\"Jelszo\": \"teszt_jelszo\",\r\n\t\t\"Nev\": \"Csontok\",\r\n\t\t\"Leiras\": \"Innen csak csontokat lehet rendelni.\",\r\n\t\t\"Cim\": \"8200 Veszprém, Gyanús utca 13.\",\r\n        \"Telefonszam\": \"+36881234567\"\r\n\t}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/regisztracio/etterem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"regisztracio",
+								"etterem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unhappy root - bad JSON 3",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"Tipus\": \"etterem\",\r\n\t\"Adatok\":\r\n\t{\r\n\t\t\"Email\": \"finom@csontok.hu\",\r\n\t\t\"Jelszo\": \"teszt_jelszo\",\r\n\t\t\"Vezeteknev\": \"Csontok\",\r\n\t\t\"Leiras\": \"Innen csak csontokat lehet rendelni.\",\r\n\t\t\"Cim\": \"8200 Veszprém, Gyanús utca 13.\"\r\n\t}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/regisztracio/etterem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"regisztracio",
+								"etterem"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hello world",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "newpassword",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "newusername",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/helloworld",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"helloworld"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
