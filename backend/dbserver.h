@@ -15,8 +15,9 @@ public:
     bool OpenCon();
     void GenerateStrings(const QVariantMap& map, QString& fields, QString& binds);
     void BindValues(QSqlQuery& query, const QVariantMap& map);
+    bool ExecuteQuery(QSqlQuery& query, QString* message, bool batch = false);
+
     void queryRegisterRestaurant(const QVariantMap& data, QString* message);
-    void queryRegisterNewRestaurant(const QVariantMap& data, QString* message);
 private:
     QSqlDatabase db;
     QString dbName;

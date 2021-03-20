@@ -58,53 +58,46 @@ void DBServer::BindValues(QSqlQuery &query, const QVariantMap &map)
     }
 }
 
-void DBServer::queryRegisterRestaurant(const QVariantMap &data, QString *message)
+bool DBServer::ExecuteQuery(QSqlQuery &query, QString *message, bool batch)
 {
-    query.clear();
+    //Milyen típusú exec függvényt kell indítani?
+    bool queryExec;
+    if (batch)
+        queryExec = query.execBatch();
+    else
+        queryExec = query.exec();
 
-    //Az input biztosan jó.
-    //Ellenőrizzük hogy van-e már ilyen adat...
-    QString str = "SELECT COUNT(*) FROM Etterem WHERE Email = :Email";
-    query.prepare(str);
-    query.bindValue(":Email", data.value("Email"));
+    //Ha nem sikerül
+    if (!queryExec) {
+        *message = "[DBServer] DB Error : " + db.lastError().text();
 
-    if (!query.exec()) {
-        message = new QString("[DBServer] DB Error : " + db.lastError().text());
-        return;
+        //Ha meg van engedve a rollback, próbáljuk meg; ha nem sikerül, hibaüzenet
+        if (!db.rollback())
+            message->append("\n[DBServer] Rollback Failed");
+        else
+            message->append("\n[DBServer] Rollback Successful");
     }
 
-    if (query.result()->handle().toInt() > 0) {
-        message = new QString("[DBServer] Error : Data Email already exists");
-        return;
-    }
-
-    //Új adat hozzáadása
-    str.clear();
-    str = "INSERT INTO Etterem (Email, Jelszo, Nev, Leiras, Cim) VALUES (:Email, :Jelszo, :Nev, :Leiras, :Cim)";
-    cout << "[DBServer] Query : " << str.toStdString() << endl;
-    query.prepare(str);
-
-    for (const auto& key: data.keys()) {
-        //cout << "[DBServer] Log : Binding " << QString(":" + key).toStdString() << " to " << data.value(key).toString().toStdString() << endl;
-        query.bindValue(QString(":" + key), data.value(key));
-    }
-
-    if (!query.exec()) {
-        message = new QString("[DBServer] DB Error : " + db.lastError().text());
-        return;
-    }
-
-    db.commit();
-    return;
-
+    return queryExec;
 }
 
-void DBServer::queryRegisterNewRestaurant(const QVariantMap &data, QString *message)
+void DBServer::queryRegisterRestaurant(const QVariantMap &data, QString *message)
 {
+    //Kötelezően indítunk egy tranzakciót. Ha ez nincs, akkor hiányosan kerülhetnek be az adatok
+    if (!db.transaction()) {
+        *message = "[DBServer] Can't open transaction - stopped";
+        return;
+    }
+    cout << "[DBServer] Transaction started" << endl;
+
+    //Biztos ami biztos
     query.clear();
 
-    //Az input biztosan jó.
-    //Új adat hozzáadása
+    //Az inputot leellenőrizte a RequestManager, tehát az biztosan jó.
+    //Ettől függetlenül még lehetnek null értékek, ezeket mindig ki kell szűrni mielőtt a query
+    //elindul.
+
+    //Adatok formázása - később egyszerűbb lesz velük dolgozni
     QVariantMap etterem;
     etterem.insert("Email", data.value("Email"));
     etterem.insert("Jelszo", data.value("Jelszo"));
@@ -118,9 +111,9 @@ void DBServer::queryRegisterNewRestaurant(const QVariantMap &data, QString *mess
     QVariantList szallit = data.value("Szallit").toList();
     QVariantList cimke = data.value("Cimke").toList();
 
-    //Létezik-e már
+    //----Etterem tábla----
 
-    //Etterem tábla
+    //QVariantMap-ek query-be dobálásához lesz jó a GenerateStrings és a BindValues függvény
     QString binds, fields;
     GenerateStrings(etterem, fields, binds);
 
@@ -129,47 +122,39 @@ void DBServer::queryRegisterNewRestaurant(const QVariantMap &data, QString *mess
     BindValues(query, etterem);
 
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-    if (!query.exec()) {
-        cout << "[DBServer] Error while processing query" << endl;
-        *message = "[DBServer] DB Error : " + db.lastError().text();
+
+    if (!ExecuteQuery(query, message))
         return;
-    }
-    cout << "[DBServer] Executed query : " << query.executedQuery().toStdString() << endl;
 
-    db.commit();
-    //query.clear();
-
-    query.finish();
-
+    //----Index megtalálása----
+    //A legújabb rekord indexe a legmagasabb
     str = "SELECT MAX(EtteremID) FROM Etterem";
     query.prepare(str);
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-    if (!query.exec()) {
-        *message = "[DBServer] DB Error : " + db.lastError().text();
+    if (!ExecuteQuery(query, message))
         return;
-    }
 
-    int etteremID = query.result()->handle().toInt();
+    query.next();
+    int etteremID = query.value(0).toInt();
     cout << "Kapott ID: " << etteremID << endl;
 
-    //query.clear();
 
-    //Cim tabla
+   //----Cim tábla---
     GenerateStrings(cim, fields, binds);
     str = "INSERT INTO EtteremCim (EtteremID, "+ fields +") VALUES ("+ QString::number(etteremID) +", "+ binds +")";
     query.prepare(str);
     BindValues(query, cim);
 
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-    if (!query.exec()) {
-        *message = "[DBServer] DB Error : " + db.lastError().text();
+    if (!ExecuteQuery(query, message))
         return;
-    }
-
-    //query.clear();
 
 
-    //Nyitva tabla
+    //----Nyitva tábla---
+    //Ez egy tömb ami azonos objektumokat tartalmaz, egyszerűbb így bind-olni az értékeket
+
+
+
     QVariantList napID, konyhaNyit, etteremNyit, etteremZar, konyhaZar;
 
     for (auto const& elem: nyitva) {
@@ -184,63 +169,49 @@ void DBServer::queryRegisterNewRestaurant(const QVariantMap &data, QString *mess
         konyhaZar << tmp.value("KonyhaZar");
     }
 
-    str = "INSERT INTO EtteremNyitvatartas VALUES ("+ QString::number(etteremID) +", ?, ?, ?, ?, ?)";
-    query.prepare(str);
+    //Ha végig null értékek voltak, akkor nem tart nyitva az étterem, tehát nem kell lefuttatni a query-t
+    if (!napID.empty()) {
 
-    query.addBindValue(napID);
-    query.addBindValue(etteremZar);
-    query.addBindValue(konyhaNyit);
-    query.addBindValue(konyhaZar);
-    query.addBindValue(etteremNyit);
-
-    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-
-    if (!query.execBatch()) {
-        *message = "[DBServer] DB Error : " + db.lastError().text();
-        return;
-    }
-
-    /*
-    for (auto const& elem: nyitva) {
-        if (elem.isNull())
-            continue;
-
-        QVariantMap tmp = elem.toMap();
-
-        QString binds, fields;
-        GenerateStrings(tmp, fields, binds);
-
-        QString str = "INSERT INTO EtteremNyitvatartas VALUES ("+ QString::number(etteremID) +", "+ binds +")";
-        cout << "[DBServer] Query : " << str.toStdString() << endl;
+        str = "INSERT INTO EtteremNyitvatartas VALUES ("+ QString::number(etteremID) +", ?, ?, ?, ?, ?)";
         query.prepare(str);
-        BindValues(query, tmp);
 
-        if (!query.exec()) {
-            message = new QString("[DBServer] DB Error : " + db.lastError().text());
+        query.addBindValue(napID);
+        query.addBindValue(etteremZar);
+        query.addBindValue(konyhaNyit);
+        query.addBindValue(konyhaZar);
+        query.addBindValue(etteremNyit);
+
+        cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+        if (!ExecuteQuery(query, message, true))
             return;
     }
-    */
 
 
-    //Szallit tabla
+    //----Szallit tábla---
+    //Ha a Szallit mező null vagy üres tömb, akkor a szallit QVariantList üres lesz
+    if (!szallit.empty()) {
 
-    str = "INSERT INTO Szallit VALUES ("+ QString::number(etteremID) + ", ?)";
-    query.prepare(str);
-    query.addBindValue(szallit);
+        str = "INSERT INTO Szallit VALUES ("+ QString::number(etteremID) + ", ?)";
+        query.prepare(str);
+        query.addBindValue(szallit);
 
-    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-    if (!query.execBatch()) {
-        *message = "[DBServer] DB Error : " + db.lastError().text();
-        return;
+        cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+        if (!ExecuteQuery(query, message, true))
+            return;
+
     }
 
-    //Cimke tabla
-    {
+
+    //----Cimke tábla---
+    if (!cimke.empty()) {
         ///TODO
-
     }
 
-    //db.commit();
+    //Végül az elindított tranzakciót befejezzük
+    db.commit();
+
+
     return;
 }
 
