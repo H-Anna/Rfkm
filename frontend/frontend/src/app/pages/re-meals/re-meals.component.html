@@ -1,0 +1,19 @@
+<!--<h2>Ételek</h2>
+<ul class="meals">
+    <li *ngFor="let meal of model" >
+        <span class="badge">{{meal.name}}</span> {{meal.price}}
+    </li>
+</ul>-->
+
+<mat-card *ngFor="let item of model "class="card" >
+    <mat-card-header>
+      <mat-card-title>{{item.name}}</mat-card-title>
+      
+    </mat-card-header>
+
+    <mat-card-content>
+      
+      <p>{{item.price}}</p>
+    </mat-card-content>
+    
+</mat-card>
