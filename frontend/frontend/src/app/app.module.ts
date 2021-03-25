@@ -11,8 +11,10 @@ import { HomeModule } from './pages/home/home.module';
 
 @NgModule({
   declarations: [
-    AppComponent
-    
+    AppComponent,
+    LoginComponent,
+    HomeComponent,
+    RegistrationComponent
   ],
   imports: [
     BrowserModule,
