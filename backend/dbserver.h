@@ -18,6 +18,10 @@ public:
     void queryRegisterUser(const QVariantMap& data, QString* message);
     void queryLogin(const QStringList& auth, QString* message);
     void querySetOpenHours(const QVariantMap& data, QString* message);
+	void queryCreateFood(const QVariantMap &data, QString *message);
+    void queryListFood(const QVariantMap &data, QString *message, QString *QueryMessage);
+    void queryListRestaurant(const QVariantMap &data, QString *message, QString *QueryMessage);
+
 private:
     QSqlDatabase db;
     QString dbName;
