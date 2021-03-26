@@ -15,6 +15,9 @@ class RequestManager
 public:
     RequestManager(const QString& dbFilePath);
     void RegisterRestaurant(const Request& request, Response& response);
+    void CreateFood(const httplib::Request &request, Response &response);
+    void ListFood(const httplib::Request &request, Response &response);
+    void ListRestaurant(const httplib::Request &request, Response &response);
 private:
     DBServer database;
 

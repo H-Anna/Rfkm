@@ -18,6 +18,9 @@ public:
     bool ExecuteQuery(QSqlQuery& query, QString* message, bool batch = false);
 
     void queryRegisterRestaurant(const QVariantMap& data, QString* message);
+    void queryCreateFood(const QVariantMap &data, QString *message);
+    void queryListFood(const QVariantMap &data, QString *message, QString *QueryMessage);
+    void queryListRestaurant(const QVariantMap &data, QString *message, QString *QueryMessage);
 private:
     QSqlDatabase db;
     QString dbName;
