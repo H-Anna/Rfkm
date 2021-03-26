@@ -60,3 +60,22 @@ QVariantMap
 	QList<Integer>
 	[]
 }
+
+{
+	"Email": "0anna@vendeg.hu",
+	"Jelszo": "jelszavam111",
+	"VNev": "Harsányi",
+	"KNev": "Anna",
+	"Cim":
+	{
+		"Irsz": 8200,
+		"Kozterulet": "Fő utca",
+		"Hazszam": "1.",
+		"Emelet_ajto": "3. em. 4. a."
+	},
+	"Telefonszam": "+36201234567"
+}
+
+
+
+Basic YUBjc29udG9rLmh1OnRlc3p0X2plbHN6bw==

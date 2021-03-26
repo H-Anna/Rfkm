@@ -15,4 +15,5 @@ HEADERS += \
     dbserver.h \
     httplib.h \
     httpserver.h \
-    requestmanager.h
+    requestmanager.h \
+    Base64.h
