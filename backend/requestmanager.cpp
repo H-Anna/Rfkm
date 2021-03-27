@@ -29,6 +29,16 @@ void RequestManager::JSONMessage(Response& response, int status, const QString& 
     cout << message.toStdString() << endl;
 }
 
+bool RequestManager::CheckJSON(const QJsonObject &toCheck, const QStringList &requiredKeys)
+{
+    for (auto const& key : requiredKeys) {
+        if (!toCheck.keys().contains(key)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void RequestManager::RegisterRestaurant(const httplib::Request &request, Response &response)
 {
 
@@ -50,22 +60,18 @@ void RequestManager::RegisterRestaurant(const httplib::Request &request, Respons
     QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
     {
         QStringList requiredKeys = { "Email", "Jelszo", "Nev", "Leiras", "Cim", "Nyitvatartas", "Cimke", "Kep", "Szallit" };
-        for (auto const& key : requiredKeys) {
-            if (!jsonObject.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-                return;
-            }
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
         }
     }
     //2. Cím
     QJsonObject jsonCim = jsonObject.value("Cim").toObject();
     {
         QStringList requiredKeys = { "Irsz", "Kozterulet", "Hazszam", "Emelet_ajto" };
-        for (auto const& key : requiredKeys) {
-            if (!jsonCim.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect object Cim");
-                return;
-            }
+        if (!CheckJSON(jsonCim, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect object Cim");
+            return;
         }
     }
     //3. Nyitvatartás
@@ -79,27 +85,25 @@ void RequestManager::RegisterRestaurant(const httplib::Request &request, Respons
         QStringList requiredKeys = { "NapID", "KonyhaNyit", "EtteremNyit", "EtteremZar", "KonyhaZar" };
         QList<int> napIDNums;
 
-        for (const auto& val: jsonNyitva){
+        for (auto val: jsonNyitva){
             if (val == QJsonValue::Null)
                 continue;
 
             QJsonObject nyitvaObject = val.toObject();
-            for (const auto& key: requiredKeys) {
-                if (!nyitvaObject.keys().contains(key)) {
-                    JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect object entry in Nyitvatartas");
-                    return;
-                }
-                int idnum = nyitvaObject.value("NapID").toInt();
-                if (napIDNums.contains(idnum)) {
-                    JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Duplicate NapID in Nyitvatartas objects");
-                    return;
-                } else {
-                    napIDNums.append(idnum);
-                }
+            if (!CheckJSON(nyitvaObject, requiredKeys)) {
+                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect object Cim");
+                return;
+            }
+
+            int idnum = nyitvaObject.value("NapID").toInt();
+            if (napIDNums.contains(idnum)) {
+                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Duplicate NapID in Nyitvatartas objects");
+                return;
+            } else {
+                napIDNums.append(idnum);
             }
         }
     }
-
 
     //Hibakezelés vége
 
@@ -142,22 +146,18 @@ void RequestManager::RegisterUser(const httplib::Request &request, Response &res
     QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
     {
         QStringList requiredKeys = { "Email", "Jelszo", "VNev", "KNev", "Cim", "Telefonszam" };
-        for (auto const& key : requiredKeys) {
-            if (!jsonObject.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-                return;
-            }
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
         }
     }
     //2. Cím
     QJsonObject jsonCim = jsonObject.value("Cim").toObject();
     {
         QStringList requiredKeys = { "Irsz", "Kozterulet", "Hazszam", "Emelet_ajto" };
-        for (auto const& key : requiredKeys) {
-            if (!jsonCim.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect object Cim");
-                return;
-            }
+        if (!CheckJSON(jsonCim, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
         }
     }
     //3. Telefonszám
@@ -204,45 +204,46 @@ void RequestManager::Login(const httplib::Request &request, Response &response)
     //Hibakezelés
 
     //Nem kaptunk adatot?
-    if (request.headers.empty()) {
+    if (request.body.empty()) {
         JSONMessage(response, 400, "[RequestManager] Error : Empty request headers");
         return;
     }
 
-    //Nincs egy bizonyos header (Authorization)
-    if (!request.has_header("Authorization") || request.get_header_value("Authorization").length() == 0) {
-        JSONMessage(response, 400, "[RequestManager] Error : No Authorization in request header");
-        return;
+    //Nem megfelelő formátum?
+    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
+    {
+        QStringList requiredKeys = { "Email", "Jelszo" };
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
     }
 
-    //Hibakezelés vége
-    cout << "[RequestManager] Log : Decoding..." << endl;
 
-    //A header a bejelentkezési adatokat Base64 kódolva tartalmazza.
-    //Az Authorization header tartalma: "Basic (kód)"
-    //Ezért a string elejétől (a szóközig) meg kell szabadulni.
-    QString value = QString::fromStdString(request.get_header_value("Authorization"));
-    QString base = value.right(value.length() - value.indexOf(" ") - 1);
-    auto a = macaron::Base64::Decode(base.toStdString());
-    auto fullauth = QString::fromStdString(string(a.begin(), a.end()));
-    auto auth = fullauth.split(":");
+    //Hibakezelés vége
 
     cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
 
-    //QVariantMap data = jsonObject.toVariantMap();
     //Ha minden oké, továbbadjuk az adatbázisnak az adatokat
+
+    QStringList auth({jsonObject.value("Email").toString(), jsonObject.value("Jelszo").toString()});
     QString msg("OK");
-    database.queryLogin(auth, &msg);
+    QString queryMsg;
+    database.queryLogin(auth, &msg, &queryMsg);
 
     int status = 200;
 
     //Ellenőrizzük a query eredményét
     if (msg != "OK") {
-        cout << "[RequestManager] Error occured in DB" << endl;
-        status = 500;
-    }
 
-    JSONMessage(response, status, msg);
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+        JSONMessage(response, status, msg);
+
+    } else {
+        response.set_content(queryMsg.toStdString(), "application/json");
+        response.status = status;
+    }
 
     cout << "[RequestManager] Log : Response sent." << endl;
     return;
@@ -267,11 +268,9 @@ void RequestManager::SetOpenHours(const httplib::Request &request, Response &res
     cout << "[RequestManager] DebugLog: " << jsonObject.value("EtteremID").toString().toStdString() << endl;
     {
         QStringList requiredKeys = { "EtteremID", "Nyitvatartas" };
-        for (auto const& key : requiredKeys) {
-            if (!jsonObject.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-                return;
-            }
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
         }
     }
     //2. Nyitvatartás
@@ -290,11 +289,9 @@ void RequestManager::SetOpenHours(const httplib::Request &request, Response &res
                 continue;
 
             QJsonObject nyitvaObject = val.toObject();
-            for (const auto& key: requiredKeys) {
-                if (!nyitvaObject.keys().contains(key)) {
-                    JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect object entry in Nyitvatartas");
-                    return;
-                }
+            if (!CheckJSON(nyitvaObject, requiredKeys)) {
+                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+                return;
             }
 
             int idnum = nyitvaObject.value("NapID").toInt();
@@ -349,33 +346,27 @@ void RequestManager::CreateFood(const httplib::Request &request, Response &respo
     QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
     {
         QStringList requiredKeys = { "Nev", "Ar", "Kep", "Leiras", "EtteremID", "Cimke"};
-        for (auto const& key : requiredKeys) {
-            if (!jsonObject.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-                return;
-            }
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
         }
     }
     //2. Idoszak
     QJsonObject jsonIdoszak = jsonObject.value("Idoszak").toObject();
     {
         QStringList requiredKeys = { "Kezdes", "Befejezes" };
-        for (auto const& key : requiredKeys) {
-            if (!jsonIdoszak.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect object Idoszak");
-                return;
-            }
+        if (!CheckJSON(jsonIdoszak, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
         }
     }
     //3. Akcio
     QJsonObject jsonAkcio = jsonObject.value("Akcio").toObject();
     {
         QStringList requiredKeys = { "Nev", "Ertek" };
-        for (auto const& key : requiredKeys) {
-            if (!jsonAkcio.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect object Akcio");
-                return;
-            }
+        if (!CheckJSON(jsonAkcio, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
         }
     }
 
@@ -449,12 +440,10 @@ void RequestManager::ListRestaurant(const httplib::Request &request, Response &r
     //1. Fő objektum
     QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
     {
-        QStringList requiredKeys = { "Iranyitoszam"};
-        for (auto const& key : requiredKeys) {
-            if (!jsonObject.keys().contains(key)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-                return;
-            }
+        QStringList requiredKeys = { "Iranyitoszam" };
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
         }
     }
 

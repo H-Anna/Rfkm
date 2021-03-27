@@ -86,40 +86,29 @@ bool DBServer::ExecuteQuery(QSqlQuery &query, QString *message, bool batch)
     return queryExec;
 }
 
-QPair<QString, int> DBServer::UserExists(QSqlQuery &query, QString *message, const QStringList &auth, const QStringList &tables)
+QPair<QString, int> DBServer::UserExists(QSqlQuery &query, QString *message, const QStringList &auth)
 {
-    int id = -1;
-    QString keresettTabla;
 
+    QString str = QString("SELECT ID, Tablanev FROM (") +
+            "SELECT FutarID AS ID, Email, Jelszo, 'Futar' AS Tablanev FROM Futar" +
+            " UNION " +
+            "SELECT EtteremID AS ID, Email, Jelszo, 'Etterem' AS Tablanev FROM Etterem" +
+            " UNION " +
+            "SELECT RVendegID AS ID, Email, Jelszo, 'RegisztraltVendeg' AS Tablanev FROM RegisztraltVendeg" +
+            ") WHERE Email='"+ auth.at(0) +"' AND Jelszo='"+ auth.at(1) +"'";
 
-    if (tables.contains("Etterem")) {
-
-        query.prepare("SELECT EtteremID FROM Etterem WHERE Email='"+ auth.at(0) +"' AND Jelszo='"+ auth.at(1) +"'");
-        if (ExecuteQuery(query, message) && query.next()) {
-            id = query.value(0).toInt();
-            keresettTabla = "Etterem";
-        }
+    query.prepare(str);
+    if (!ExecuteQuery(query, message)) {
+        return QPair<QString, int>();
     }
+    query.next();
+    int id = query.value(0).toInt();
+    QString keresettTabla = query.value(1).toString();
 
-    if (id == -1 && tables.contains("RegisztraltVendeg")) {
+    if (id <= 0)
+        return QPair<QString, int>();
 
-        query.prepare("SELECT RVendegID FROM RegisztraltVendeg WHERE Email='"+ auth.at(0) +"' AND Jelszo='"+ auth.at(1) +"'");
-        if (ExecuteQuery(query, message) && query.next()) {
-            id = query.value(0).toInt();
-            keresettTabla = "RegisztraltVendeg";
-        }
-
-    }
-    if (id == -1 && tables.contains("Futar")) {
-
-        query.prepare("SELECT FutarID FROM Futar WHERE Email='"+ auth.at(0) +"' AND Jelszo='"+ auth.at(1) +"'");
-        if (ExecuteQuery(query, message) && query.next()) {
-            id = query.value(0).toInt();
-            keresettTabla = "Futar";
-        }
-    }
-
-    return QPair(keresettTabla, id);
+    return QPair<QString, int>(keresettTabla, id);
 }
 
 void DBServer::queryRegisterRestaurant(const QVariantMap &data, QString *message)
@@ -154,6 +143,11 @@ void DBServer::queryRegisterRestaurant(const QVariantMap &data, QString *message
     etterem.insert("Szallitasi_ktsg", data.value("Szallitasi_ktsg"));
 
     QVariantMap cim = data.value("Cim").toMap();
+    etterem.insert("Irsz", cim.value("Irsz"));
+    etterem.insert("Kozterulet", cim.value("Kozterulet"));
+    etterem.insert("Hazszam", cim.value("Hazszam"));
+    etterem.insert("Emelet_ajto", cim.value("Emelet_ajto"));
+
     QVariantList nyitva = data.value("Nyitvatartas").toList();
     QVariantList szallit = data.value("Szallit").toList();
     QVariantList cimke = data.value("Cimke").toList();
@@ -175,8 +169,7 @@ void DBServer::queryRegisterRestaurant(const QVariantMap &data, QString *message
 
     //----Index megtalálása----
     //A legújabb rekord indexe a legmagasabb
-    str = "SELECT MAX(EtteremID) FROM Etterem";
-    query.prepare(str);
+    query.prepare("SELECT MAX(EtteremID) FROM Etterem");
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
     if (!ExecuteQuery(query, message))
         return;
@@ -184,17 +177,6 @@ void DBServer::queryRegisterRestaurant(const QVariantMap &data, QString *message
     query.next();
     int etteremID = query.value(0).toInt();
     cout << "Kapott ID: " << etteremID << endl;
-
-
-   //----Cim tábla---
-    GenerateStrings(cim, fields, binds);
-    str = "INSERT INTO EtteremCim (EtteremID, "+ fields +") VALUES ("+ QString::number(etteremID) +", "+ binds +")";
-    query.prepare(str);
-    BindValues(query, cim);
-
-    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-    if (!ExecuteQuery(query, message))
-        return;
 
 
     //----Nyitva tábla---
@@ -207,6 +189,12 @@ void DBServer::queryRegisterRestaurant(const QVariantMap &data, QString *message
             continue;
 
         auto tmp = elem.toMap();
+
+        if (tmp.value("KonyhaNyit").toUInt() == 0 && tmp.value("KonyhaZar").toUInt() == 0
+                && tmp.value("EtteremNyit").toUInt() == 0 && tmp.value("EtteremZar").toUInt() == 0) {
+            continue;
+        }
+
         napID << tmp.value("NapID");
         konyhaNyit << tmp.value("KonyhaNyit");
         etteremNyit << tmp.value("EtteremNyit");
@@ -237,7 +225,7 @@ void DBServer::queryRegisterRestaurant(const QVariantMap &data, QString *message
     //Ha a Szallit mező null vagy üres tömb, akkor a szallit QVariantList üres lesz
     if (!szallit.empty()) {
 
-        str = "INSERT INTO Szallit VALUES ("+ QString::number(etteremID) + ", ?)";
+        str = "INSERT INTO EtteremSzallit VALUES ("+ QString::number(etteremID) + ", ?)";
         query.prepare(str);
         query.addBindValue(szallit);
 
@@ -279,8 +267,6 @@ void DBServer::queryRegisterUser(const QVariantMap &data, QString *message)
     }
 
     //Az inputot leellenőrizte a RequestManager, tehát az biztosan jó.
-    //Ettől függetlenül még lehetnek null értékek, ezeket mindig ki kell szűrni mielőtt a query
-    //elindul.
 
     //Adatok formázása - később egyszerűbb lesz velük dolgozni
     QVariantMap vendeg;
@@ -288,48 +274,43 @@ void DBServer::queryRegisterUser(const QVariantMap &data, QString *message)
     vendeg.insert("Jelszo", data.value("Jelszo"));
     vendeg.insert("VNev", data.value("VNev"));
     vendeg.insert("KNev", data.value("KNev"));
-    vendeg.insert("Telefonszam", data.value("Telefonszam"));
 
-    QVariantMap cim = data.value("Cim").toMap();
+    //----Vendeg tábla----
+    QString str = QString("INSERT INTO Vendeg (Telefonszam) VALUES ('") + data.value("Telefonszam").toString() +"')";
+    query.prepare(str);
+    if (!ExecuteQuery(query, message))
+        return;
 
-    //----Etterem tábla----
+    query.prepare("SELECT MAX(VendegID) FROM Vendeg");
+    if (!ExecuteQuery(query, message))
+        return;
+    query.next();
+    vendeg.insert("RVendegID",query.value(0).toUInt());
 
-    //QVariantMap-ek query-be dobálásához lesz jó a GenerateStrings és a BindValues függvény
+    //----RegisztraltVendeg tábla---
     QString binds, fields;
     GenerateStrings(vendeg, fields, binds);
-
-    QString str = "INSERT INTO RegisztraltVendeg ("+ fields +") VALUES ("+ binds +")";
+    str = "INSERT INTO RegisztraltVendeg ("+ fields +") VALUES ("+ binds +")";
     query.prepare(str);
     BindValues(query, vendeg);
 
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-
     if (!ExecuteQuery(query, message))
         return;
 
-    //----Index megtalálása----
-    //A legújabb rekord indexe a legmagasabb
-    str = "SELECT MAX(RVendegID) FROM RegisztraltVendeg";
-    query.prepare(str);
-    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-    if (!ExecuteQuery(query, message))
-        return;
+   //----VendegCim tábla---
 
-    query.next();
-    int vendegID = query.value(0).toInt();
-    cout << "Kapott ID: " << vendegID << endl;
+    QVariantMap cim = data.value("Cim").toMap();
+    cim.insert("VendegID", vendeg.value("RVendegID"));
 
-
-   //----Cim tábla---
     GenerateStrings(cim, fields, binds);
-    str = "INSERT INTO RegVendegCim (VendegID, "+ fields +") VALUES ("+ QString::number(vendegID) +", "+ binds +")";
+    str = "INSERT INTO VendegCim ("+ fields +") VALUES ("+ binds +")";
     query.prepare(str);
     BindValues(query, cim);
 
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
     if (!ExecuteQuery(query, message))
         return;
-
 
     //Végül az elindított tranzakciót befejezzük
     db.commit();
@@ -339,16 +320,20 @@ void DBServer::queryRegisterUser(const QVariantMap &data, QString *message)
 
 }
 
-void DBServer::queryLogin(const QStringList &auth, QString *message)
+void DBServer::queryLogin(const QStringList &auth, QString *message, QString *queryMsg)
 {
     auto user = UserExists(query, message, auth);
 
     if (user.first.length() == 0) {
         *message = "[DBServer] Error : Auth data matches no existing users";
-    } else {
-        *message = "[DBServer] Log: User found in table '"+ user.first +"'.";
+        return;
     }
 
+    QJsonObject queryResult;
+    queryResult.insert("Tipus", user.first);
+    queryResult.insert("ID", user.second);
+
+    *queryMsg = QJsonDocument(queryResult).toJson(QJsonDocument::Compact).toStdString().c_str();
 }
 
 void DBServer::querySetOpenHours(const QVariantMap &data, QString *message)
@@ -371,6 +356,12 @@ void DBServer::querySetOpenHours(const QVariantMap &data, QString *message)
             continue;
 
         auto tmp = elem.toMap();
+
+        if (tmp.value("KonyhaNyit").toUInt() == 0 && tmp.value("KonyhaZar").toUInt() == 0
+                && tmp.value("EtteremNyit").toUInt() == 0 && tmp.value("EtteremZar").toUInt() == 0) {
+            continue;
+        }
+
         napID << tmp.value("NapID");
         konyhaNyit << tmp.value("KonyhaNyit");
         etteremNyit << tmp.value("EtteremNyit");
@@ -378,6 +369,8 @@ void DBServer::querySetOpenHours(const QVariantMap &data, QString *message)
         konyhaZar << tmp.value("KonyhaZar");
     }
 
+
+    //Ha már létezik ilyen ID-vel étterem a táblában, azokat a rekordokat töröljük
     query.prepare("DELETE FROM EtteremNyitvatartas WHERE EtteremID="+QString::number(etteremID));
     if (!ExecuteQuery(query, message))
         return;

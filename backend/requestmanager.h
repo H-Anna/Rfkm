@@ -26,6 +26,7 @@ private:
     DBServer database;
 
     void JSONMessage(Response& response, int status, const QString& message);
+    bool CheckJSON(const QJsonObject& toCheck, const QStringList& requiredKeys);
 };
 
 #endif // REQUESTMANAGER_H
