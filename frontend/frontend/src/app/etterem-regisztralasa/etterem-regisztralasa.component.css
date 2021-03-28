@@ -1,0 +1,18 @@
+
+@import "~bootstrap/dist/css/bootstrap.css";
+
+form {
+    padding: 20px;
+}
+
+label {
+    font-weight: bold;
+}
+
+.btn-primary:disabled {
+    background-color: rgb(145, 145, 145);
+}
+
+#cim {
+    margin-left: 30px;
+}

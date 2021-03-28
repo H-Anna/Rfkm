@@ -1,0 +1,71 @@
+
+<!-- nev, ar , kep , leiras , etteremid?-->
+
+<form [formGroup]="form" (ngSubmit)="submit(form)">
+
+  <div class="form-group">
+
+    <label for="kategoria">Kategória</label><br>
+    <select id="kategoria" formControlName="kategoria" class="form-control">
+      <!--<option *ngFor="let item of categories"></option>-->
+    </select>
+    <div class="alert alert-danger" >
+      <div *ngIf="nev.errors && nev.errors.required">Nem adtad meg az étel nevét.</div>
+    </div>
+
+      <label for="nev">Étel neve</label><br>
+      <input id="nev" formControlName="nev"  type="text" class="form-control">
+      <div class="alert alert-danger" >
+        <div *ngIf="nev.errors && nev.errors.required">Nem adtad meg az étel nevét.</div>
+      </div>
+      
+
+      <label for="ar">Ár</label><br>
+      <input id="ar" formControlName="ar"  type="text" class="form-control">
+      <div class="alert alert-danger" >
+        <div *ngIf="ar.errors && ar.errors.required">Nem adtál meg árat.</div>              
+      </div>
+
+      <label for="leiras">Leírás</label>
+      <p>Adj meg egy rövid leírást az ételről</p>
+      <input id="leiras" formControlName="leiras"  type="text" class="form-control">
+      <div class="alert alert-danger" > 
+        <div *ngIf="leiras.errors && leiras.errors.required">Nem adtad meg az étel leírását.</div>
+      </div>
+
+      <label for="allergen">Allergén összetevő</label><!-- lehet újat megadni ????  KIVÁLASZTÓS ??-->
+      <input id="allergen" formControlName="allergen"  type="text" class="form-control">
+      
+      
+  </div>
+<button type="button" class="btn btn-primary" [disabled]="!form.valid" (click)="submit(form)">Hozzáadás</button>
+</form>
+
+
+
+
+
+
+
+
+<mat-card *ngFor="let item of etelek" class="card" >
+    <mat-card-header>
+      <mat-card-title>{{item.name}}</mat-card-title>
+      
+    </mat-card-header>
+
+    <mat-card-content>
+      
+      <p>{{item.price}}</p>
+    </mat-card-content>
+    
+</mat-card>
+
+<!--
+<h2>Ételek</h2>
+<ul>
+    <li *ngFor="let etel of etelek" >
+        {{etel.name}}  {{etel.price}}
+    </li>
+</ul>
+-->

@@ -1,17 +1,15 @@
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router'; 1
-import { LoginComponent } from './pages/login/login.component';
-import { RegistrationComponent } from './pages/registration/registration.component';
+import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from "@angular/common";
 
-const routes: Routes = [
-  { path: 'login', component: LoginComponent},
-  { path: 'registration', component: RegistrationComponent},
-  //todo
-
-];
+const routes: Routes = [];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes),
+    CommonModule,
+    BrowserModule
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

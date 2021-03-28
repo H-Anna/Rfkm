@@ -1,0 +1,69 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+
+    .bg {
+      /* The image used */
+      background-image: url('../../assets/FoodBackground.jpg');
+      background-attachment: fixed;
+      background-size: cover;
+      
+      height: 100%;
+      margin: 0;
+
+
+      /* Full height */
+      height: 100%;
+
+      /* Center and scale the image nicely */
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+
+
+      overflow-x: hidden;
+      overflow-y: scroll;
+
+    }
+
+    .bejelentkezes {
+      background: white;
+      width: 30%;
+      padding: 20px;
+      border-radius: 20px;
+      margin-top: 30px;
+      margin-right: 150px;
+      margin-left: 50px;
+      background: rgba(22, 17, 9, 0.7);
+    }
+
+    .feherszoveg {
+      color: white;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      background: rgba(22, 17, 9, 1);
+      border: none;
+    }
+
+    .navbar {
+        background: rgba(22, 17, 9);
+    }
+
+    .nav-link{
+      color: white;
+    }
+
+    #cim {
+      margin-left: 20px;
+    }
+
+    input.form-control {
+      background: rgba(255, 255, 255, 0.379);
+      color: white;
+      border-width: 0ch;
+    }
+
+    input.warning {
+      border-color: red;
+      border-width: 2px;
+    }

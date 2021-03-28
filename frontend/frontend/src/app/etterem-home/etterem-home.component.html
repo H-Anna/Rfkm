@@ -1,0 +1,21 @@
+ <div fxLayout="column" fxFlexFill>
+   <div class="header"></div>
+   <mat-toolbar class="fixed-navbar mat-elevation-z10">
+
+     <mat-toolbar-row>
+       <div>
+         <a mat-button> Főoldal </a>
+         <a mat-button routerLink="/etterem/etelek"> Ételek </a>
+         <a mat-button> Menü </a>
+         <a mat-button> Profil </a>
+         <a mat-button> Kijelentkezés </a>
+
+       </div>
+
+       <span class="fill-space"></span>
+     </mat-toolbar-row>
+   </mat-toolbar>
+   
+   <router-outlet></router-outlet>
+
+ </div>
