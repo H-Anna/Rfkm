@@ -1,7 +1,5 @@
 #include "requestmanager.h"
 
-#include "Base64.h"
-
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -38,6 +36,7 @@ bool RequestManager::CheckJSON(const QJsonObject &toCheck, const QStringList &re
     }
     return true;
 }
+
 
 void RequestManager::RegisterRestaurant(const httplib::Request &request, Response &response)
 {
@@ -249,84 +248,6 @@ void RequestManager::Login(const httplib::Request &request, Response &response)
     return;
 }
 
-void RequestManager::SetOpenHours(const httplib::Request &request, Response &response)
-{
-    cout << "[RequestManager] Log : Starting User registration..." << endl;
-    cout << "[RequestManager] Log : Checking for errors..." << endl;
-
-    //Hibakezelés
-
-    //Nem kaptunk adatot?
-    if (request.body.empty()) {
-        JSONMessage(response, 400, "[RequestManager] Error : Empty request body");
-        return;
-    }
-
-    //Nem megfelelő formátum?
-    //1. Fő objektum
-    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
-    cout << "[RequestManager] DebugLog: " << jsonObject.value("EtteremID").toString().toStdString() << endl;
-    {
-        QStringList requiredKeys = { "EtteremID", "Nyitvatartas" };
-        if (!CheckJSON(jsonObject, requiredKeys)) {
-            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-            return;
-        }
-    }
-    //2. Nyitvatartás
-    QJsonArray jsonNyitva = jsonObject.value("Nyitvatartas").toArray();
-    {
-        if (jsonNyitva.count() != 7) {
-            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Not enough entries in Nyitvatartas");
-            return;
-        }
-
-        QStringList requiredKeys = { "NapID", "KonyhaNyit", "EtteremNyit", "EtteremZar", "KonyhaZar" };
-
-        QList<int> napIDNums;
-        for (const auto& val: jsonNyitva){
-            if (val == QJsonValue::Null)
-                continue;
-
-            QJsonObject nyitvaObject = val.toObject();
-            if (!CheckJSON(nyitvaObject, requiredKeys)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-                return;
-            }
-
-            int idnum = nyitvaObject.value("NapID").toInt();
-            if (napIDNums.contains(idnum)) {
-                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Duplicate NapID in Nyitvatartas objects");
-                return;
-            } else {
-                napIDNums.append(idnum);
-            }
-        }
-    }
-
-    //Hibakezelés vége
-
-    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
-
-    QVariantMap data = jsonObject.toVariantMap();
-    //Ha minden oké, továbbadjuk az adatbázisnak az adatokat
-    QString msg("OK");
-    database.querySetOpenHours(data, &msg);
-
-    int status = 200;
-
-    //Ellenőrizzük a query eredményét
-    if (msg != "OK") {
-        cout << "[RequestManager] Error occured during DB write" << endl;
-        status = 500;
-    }
-
-    JSONMessage(response, status, msg);
-
-    cout << "[RequestManager] Log : Response sent." << endl;
-    return;
-
-}
 
 void RequestManager::CreateFood(const httplib::Request &request, Response &response)
 {
@@ -345,7 +266,7 @@ void RequestManager::CreateFood(const httplib::Request &request, Response &respo
     //1. Fő objektum
     QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
     {
-        QStringList requiredKeys = { "Nev", "Ar", "Kep", "Leiras", "EtteremID", "Cimke"};
+        QStringList requiredKeys = { "Nev", "Ar", "Kep", "Leiras", "EtteremID", "Cimke", "AkcioID"};
         if (!CheckJSON(jsonObject, requiredKeys)) {
             JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
             return;
@@ -356,16 +277,7 @@ void RequestManager::CreateFood(const httplib::Request &request, Response &respo
     {
         QStringList requiredKeys = { "Kezdes", "Befejezes" };
         if (!CheckJSON(jsonIdoszak, requiredKeys)) {
-            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-            return;
-        }
-    }
-    //3. Akcio
-    QJsonObject jsonAkcio = jsonObject.value("Akcio").toObject();
-    {
-        QStringList requiredKeys = { "Nev", "Ertek" };
-        if (!CheckJSON(jsonAkcio, requiredKeys)) {
-            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in Idoszak");
             return;
         }
     }
@@ -375,7 +287,6 @@ void RequestManager::CreateFood(const httplib::Request &request, Response &respo
     cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
 
     QVariantMap data = jsonObject.toVariantMap();
-    //Ha minden oké, továbbadjuk az adatbázisnak az adatokat
     QString msg("OK");
     database.queryCreateFood(data, &msg);
 
@@ -392,6 +303,54 @@ void RequestManager::CreateFood(const httplib::Request &request, Response &respo
     cout << "[RequestManager] Log : Response sent." << endl;
     return;
 }
+
+void RequestManager::CreateFoodTag(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting Food Updating..." << endl;
+    cout << "[RequestManager] Log : Checking for errors..." << endl;
+
+    //Hibakezelés
+
+    //Nem kaptunk adatot?
+    if (request.body.empty()) {
+        JSONMessage(response, 400, "[RequestManager] Error : Empty request body");
+        return;
+    }
+
+    //Nem megfelelő formátum?
+    //1. Fő objektum
+    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
+    {
+        QStringList requiredKeys = { "Nev"};
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
+    }
+
+    //Hibakezelés vége
+
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    QVariantMap data = jsonObject.toVariantMap();
+    //Ha minden oké, továbbadjuk az adatbázisnak az adatokat
+    QString msg("OK");
+
+    database.queryCreateFoodTag(data, &msg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+    }
+
+    JSONMessage(response, status, msg);
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+}
+
 
 void RequestManager::ListFood(const httplib::Request &request, Response &response)
 {
@@ -440,7 +399,7 @@ void RequestManager::ListRestaurant(const httplib::Request &request, Response &r
     //1. Fő objektum
     QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
     {
-        QStringList requiredKeys = { "Iranyitoszam" };
+        QStringList requiredKeys = { "Irsz", "Nev", "EtelCimke", "EtteremCimke" };
         if (!CheckJSON(jsonObject, requiredKeys)) {
             JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
             return;
@@ -473,3 +432,406 @@ void RequestManager::ListRestaurant(const httplib::Request &request, Response &r
     cout << "[RequestManager] Log : Response sent." << endl;
     return;
 }
+
+void RequestManager::ListRestaurantTag(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting Restaurant Tag Listing..." << endl;
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    //Ha minden oké, továbbadjuk az adatbázisnak az adatokat
+    QString msg("OK");
+    QString queryMsg("");
+    database.queryListRestaurantTag(&msg, &queryMsg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+        JSONMessage(response, status, msg);
+    }
+    else{
+        response.set_content(queryMsg.toStdString(), "application/json");
+        response.status = status;
+    }
+
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+}
+
+void RequestManager::ListFoodTag(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting Food Tag Listing..." << endl;
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    //Ha minden oké, továbbadjuk az adatbázisnak az adatokat
+    QString msg("OK");
+    QString queryMsg("");
+    database.queryListFoodTag(&msg, &queryMsg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+        JSONMessage(response, status, msg);
+    }
+    else{
+        response.set_content(queryMsg.toStdString(), "application/json");
+        response.status = status;
+    }
+
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+}
+
+
+void RequestManager::UpdateFood(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting Food Updating..." << endl;
+    cout << "[RequestManager] Log : Checking for errors..." << endl;
+
+    //Hibakezelés
+
+    //Nem kaptunk adatot?
+    if (request.body.empty()) {
+        JSONMessage(response, 400, "[RequestManager] Error : Empty request body");
+        return;
+    }
+
+    //Nem megfelelő formátum?
+    //1. Fő objektum
+    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
+    {
+        QStringList requiredKeys = { "Nev", "Ar", "Kep", "Leiras", "EtelID", "Cimke", "AkcioID"};
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
+    }
+    //2. Idoszak
+    QJsonObject jsonIdoszak = jsonObject.value("Idoszak").toObject();
+    {
+        QStringList requiredKeys = { "Kezdes", "Befejezes" };
+        if (!CheckJSON(jsonIdoszak, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in Idoszak");
+            return;
+        }
+    }
+
+    //Hibakezelés vége
+
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    QVariantMap data = jsonObject.toVariantMap();
+    QString msg("OK");
+    QString queryMsg("");
+    database.queryUpdateFood(data, &msg, &queryMsg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+    }
+
+    JSONMessage(response, status, msg);
+
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+}
+
+void RequestManager::UpdateRestaurantBasics(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting Restaurant updating (basics)..." << endl;
+    cout << "[RequestManager] Log : Checking for errors..." << endl;
+
+    //Hibakezelés
+
+    //Nem kaptunk adatot?
+    if (request.body.empty()) {
+        JSONMessage(response, 400, "[RequestManager] Error : Empty request body");
+        return;
+    }
+
+    //Nem megfelelő formátum?
+    //1. Fő objektum
+    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
+    {
+        QStringList requiredKeys = { "EtteremID", "Nev", "Leiras", "Cimke", "Kep", "Szallit", "Szallitasi_ktsg" };
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
+    }
+
+    //Hibakezelés vége
+
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    QVariantMap data = jsonObject.toVariantMap();
+    QString msg("OK");
+    database.queryUpdateRestaurantBasics(data, &msg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+    }
+
+    JSONMessage(response, status, msg);
+
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+}
+
+void RequestManager::UpdateRestaurantAddress(const httplib::Request &request, Response &response)
+{
+
+    QJsonValue a = QJsonValue::Null;
+
+    cout << "[RequestManager] Log : Starting Restaurant updating (address)..." << endl;
+    cout << "[RequestManager] Log : Checking for errors..." << endl;
+
+    //Hibakezelés
+
+    //Nem kaptunk adatot?
+    if (request.body.empty()) {
+        JSONMessage(response, 400, "[RequestManager] Error : Empty request body");
+        return;
+    }
+
+    //Nem megfelelő formátum?
+    //1. Fő objektum
+    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
+    {
+        QStringList requiredKeys = { "EtteremID", "Irsz", "Kozterulet", "Hazszam", "Emelet_ajto" };
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
+    }
+
+    //Hibakezelés vége
+
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    QVariantMap data = jsonObject.toVariantMap();
+    QString msg("OK");
+    database.queryUpdateRestaurantAddress(data, &msg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+    }
+
+    JSONMessage(response, status, msg);
+
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+}
+
+void RequestManager::SetOpenHours(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting User registration..." << endl;
+    cout << "[RequestManager] Log : Checking for errors..." << endl;
+
+    //Hibakezelés
+
+    //Nem kaptunk adatot?
+    if (request.body.empty()) {
+        JSONMessage(response, 400, "[RequestManager] Error : Empty request body");
+        return;
+    }
+
+    //Nem megfelelő formátum?
+    //1. Fő objektum
+    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
+    cout << "[RequestManager] DebugLog: " << jsonObject.value("EtteremID").toString().toStdString() << endl;
+    {
+        QStringList requiredKeys = { "EtteremID", "Nyitvatartas" };
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
+    }
+    //2. Nyitvatartás
+    QJsonArray jsonNyitva = jsonObject.value("Nyitvatartas").toArray();
+    {
+        if (jsonNyitva.count() != 7) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Not enough entries in Nyitvatartas");
+            return;
+        }
+
+        QStringList requiredKeys = { "NapID", "KonyhaNyit", "EtteremNyit", "EtteremZar", "KonyhaZar" };
+        QList<int> napIDNums;
+        for (const auto& val: jsonNyitva){
+            if (val == QJsonValue::Null)
+                continue;
+
+            QJsonObject nyitvaObject = val.toObject();
+            if (!CheckJSON(nyitvaObject, requiredKeys)) {
+                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+                return;
+            }
+
+            int idnum = nyitvaObject.value("NapID").toInt();
+            if (napIDNums.contains(idnum)) {
+                JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Duplicate NapID in Nyitvatartas objects");
+                return;
+            } else {
+                napIDNums.append(idnum);
+            }
+        }
+    }
+
+    //Hibakezelés vége
+
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    QVariantMap data = jsonObject.toVariantMap();
+    //Ha minden oké, továbbadjuk az adatbázisnak az adatokat
+    QString msg("OK");
+    database.querySetOpenHours(data, &msg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+    }
+
+    JSONMessage(response, status, msg);
+
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+
+}
+
+void RequestManager::UpdateUser(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting User updating..." << endl;
+    cout << "[RequestManager] Log : Checking for errors..." << endl;
+
+    //Hibakezelés
+
+    //Nem kaptunk adatot?
+    if (request.body.empty()) {
+        JSONMessage(response, 400, "[RequestManager] Error : Empty request body");
+        return;
+    }
+
+    //Nem megfelelő formátum?
+    //1. Fő objektum
+    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
+    {
+        QStringList requiredKeys = {"VendegID", "VNev", "KNev", "Cim", "Telefonszam" };
+        if (!CheckJSON(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
+    }
+    //2. Cím
+    QJsonObject jsonCim = jsonObject.value("Cim").toObject();
+    {
+        QStringList requiredKeys = { "Irsz", "Kozterulet", "Hazszam", "Emelet_ajto" };
+        if (!CheckJSON(jsonCim, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
+    }
+    //3. Telefonszám
+    QJsonValue jsonTel = jsonObject.value("Telefonszam");
+    {
+        QRegularExpression re(R"([+]\d{1,2}\d{1,2}\d{7})");
+        QRegularExpression re2(R"([06]\d{1,2}\d{7,8})");
+
+        if (!(re.match(jsonTel.toString()).hasMatch() || re2.match(jsonTel.toString()).hasMatch())) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect format for Telefonszam");
+            return;
+        }
+    }
+
+    //Hibakezelés vége
+
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    QVariantMap data = jsonObject.toVariantMap();
+    QString msg("OK");
+    database.queryUpdateUser(data, &msg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+    }
+
+    JSONMessage(response, status, msg);
+
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+
+}
+
+
+void RequestManager::DeleteFood(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting Food Deleting..." << endl;
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    QVariantMap data;
+    QString id = QString::fromStdString(request.matches[1]);
+    data.insert("EtelID", id);
+
+    QString msg("OK");
+    database.queryDeleteFood(data, &msg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+    }
+    cout << "[RequestManager] Log : Response sent." << endl;
+
+    JSONMessage(response, status, msg);
+    return;
+}
+
+void RequestManager::DeleteFoodTag(const httplib::Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting Food Tag Deleting..." << endl;
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    QVariantMap data;
+    QString id = QString::fromStdString(request.matches[1]);
+    data.insert("CimkeID", id);
+
+    QString msg("OK");
+    database.queryDeleteFoodTag(data, &msg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB write" << endl;
+        status = 500;
+    }
+    cout << "[RequestManager] Log : Response sent." << endl;
+
+    JSONMessage(response, status, msg);
+    return;
+}
+
