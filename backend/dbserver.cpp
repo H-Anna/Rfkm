@@ -1108,49 +1108,8 @@ void DBServer::querySetOpenHours(const QVariantMap &data, QString *message)
 
     QVariantList napID, konyhaNyit, etteremNyit, etteremZar, konyhaZar;
 
-    for (auto const& elem: nyitva) {
-        if (elem.isNull())
-            continue;
-
-        auto tmp = elem.toMap();
-
-        if (tmp.value("KonyhaNyit").toUInt() == 0 && tmp.value("KonyhaZar").toUInt() == 0
-                && tmp.value("EtteremNyit").toUInt() == 0 && tmp.value("EtteremZar").toUInt() == 0) {
-            continue;
-        }
-
-        napID << tmp.value("NapID");
-        konyhaNyit << tmp.value("KonyhaNyit");
-        etteremNyit << tmp.value("EtteremNyit");
-        etteremZar << tmp.value("EtteremZar");
-        konyhaZar << tmp.value("KonyhaZar");
-    }
-
-
-    //Ha már létezik ilyen ID-vel étterem a táblában, azokat a rekordokat töröljük
-    query.prepare("DELETE FROM EtteremNyitvatartas WHERE EtteremID="+QString::number(etteremID));
-    if (!ExecuteQuery(query, message))
+    if (!insertRestaurantOpenHours(nyitva, message, etteremID))
         return;
-
-    //Ha végig null értékek voltak, akkor nem tart nyitva az étterem, tehát nem kell lefuttatni a query-t
-    if (!napID.empty()) {
-
-        query.clear();
-        QString str = "INSERT INTO EtteremNyitvatartas VALUES ("+ QString::number(etteremID) +", ?, ?, ?, ?, ?)";
-        query.prepare(str);
-
-        query.addBindValue(napID);
-        query.addBindValue(etteremZar);
-        query.addBindValue(konyhaNyit);
-        query.addBindValue(konyhaZar);
-        query.addBindValue(etteremNyit);
-
-        cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-
-        if (!ExecuteQuery(query, message, true))
-            return;
-
-    }
 
     db.commit();
 }
