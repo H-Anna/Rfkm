@@ -16,6 +16,7 @@ public:
 
     void queryRegisterRestaurant(const QVariantMap& data, QString* message);
     void queryRegisterUser(const QVariantMap& data, QString* message);
+    void queryRegisterWorker(const QVariantMap& data, QString* message);
     void queryLogin(const QStringList& auth, QString* message, QString* queryMsg);
 
     void queryCreateFood(const QVariantMap &data, QString *message);
@@ -26,11 +27,16 @@ public:
     void queryListRestaurantTag(QString *message, QString *QueryMessage);
     void queryListFoodTag(QString *message, QString *QueryMessage);
 
-    void queryUpdateFood(const QVariantMap &data, QString *message, QString *QueryMessage);
+    void queryUpdateFood(const QVariantMap &data, QString *message);
     void queryUpdateRestaurantBasics(const QVariantMap &data, QString *message);
     void queryUpdateRestaurantAddress(const QVariantMap &data, QString *message);
-    void querySetOpenHours(const QVariantMap& data, QString* message);
+    void querySetRestaurantOpenHours(const QVariantMap& data, QString* message);
+    void queryListRestaurantOrders(const QVariantMap &data, QString *message, QString* queryMsg);
+    void querySetWorkerShare(const QVariantMap& data, QString* message);
+
     void queryUpdateUser(const QVariantMap &data, QString *message);
+    void queryListUserOrders(const QVariantMap &data, QString *message, QString* queryMsg);
+    void queryPlaceUserOrder(const QVariantMap &data, QString *message);
 
     void queryDeleteFood(const QVariantMap &data, QString *message);
     void queryDeleteFoodTag(const QVariantMap &data, QString *message);
@@ -50,10 +56,12 @@ private:
     QPair<QString, int> UserExists(QSqlQuery& query, QString* message, const QStringList& auth);
 
     bool insertFoodOpenHours(const QVariantMap &idoszak, QString *message, QString &fields, QString &binds);
-    bool insertFoodTags(const QVariantList &cimke, QString *message, int etelID);
-    bool insertRestaurantDelivers(const QVariantList &szallit, QString *message, int etteremID);
-    bool insertRestaurantTags(const QVariantList &cimke, QString *message, int etteremID);
-    bool insertRestaurantOpenHours(const QVariantList &nyitva, QString *message, int etteremID);
+    bool insertFoodTags(const QVariantList &cimke, QString *message, const int etelID);
+    bool insertRestaurantDelivers(const QVariantList &szallit, QString *message, const int etteremID);
+    bool insertRestaurantTags(const QVariantList &cimke, QString *message, const int etteremID);
+    bool insertRestaurantOpenHours(const QVariantList &nyitva, QString *message, const int etteremID);
+    bool insertWorkerOpenHours(const QVariantList &mikor, QString *message, const int futarID);
+    bool insertWorkerDelivers(const QVariantList &szallit, QString *message, const int futarID);
 
 };
 

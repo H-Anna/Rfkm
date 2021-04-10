@@ -9,6 +9,7 @@ HTTPServer::HTTPServer(const QString& dbFilePath):
 
     Post(R"(/regisztracio/etterem)", [&](const Request& request, Response& response){ manager.RegisterRestaurant(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Post(R"(/regisztracio/vendeg)", [&](const Request& request, Response& response){ manager.RegisterUser(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Post(R"(/regisztracio/futar)", [&](const Request& request, Response& response){ manager.RegisterWorker(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Post(R"(/belepes)", [&](const Request& request, Response& response){ manager.Login(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
 
     Post(R"(/etterem/etel)", [&](const Request& request, Response& response){ manager.CreateFood(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
@@ -16,14 +17,20 @@ HTTPServer::HTTPServer(const QString& dbFilePath):
 
     Get(R"(/etterem/(\d+))", [&](const Request& request, Response& response){ manager.ListFood(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Post(R"(/etterem)", [&](const Request& request, Response& response){ manager.ListRestaurant(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Get(R"(/etterem/rendelesek/(\d+))", [&](const Request& request, Response& response){ manager.ListRestaurantOrders(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Get(R"(/cimke/etterem)", [&](const Request& request, Response& response){ manager.ListRestaurantTag(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Get(R"(/cimke/etel)", [&](const Request& request, Response& response){ manager.ListFoodTag(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
 
     Post(R"(/etterem/etel/modositas)", [&](const Request& request, Response& response){ manager.UpdateFood(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Post(R"(/etterem/alapok/modositas)", [&](const Request& request, Response& response){ manager.UpdateRestaurantBasics(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Post(R"(/etterem/cim/modositas)", [&](const Request& request, Response& response){ manager.UpdateRestaurantAddress(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
-    Post(R"(/edit/nyitvatartas)", [&](const Request& request, Response& response){ manager.SetOpenHours(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Post(R"(/etterem/nyitvatartas/modositas)", [&](const Request& request, Response& response){ manager.SetRestaurantOpenHours(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Post(R"(/etterem/futarreszesedes/modositas)", [&](const Request& request, Response& response){ manager.SetWorkerShare(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+
+
     Post(R"(/vendeg/modositas)", [&](const Request& request, Response& response){ manager.UpdateUser(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Get(R"(/vendeg/rendelesek/(\d+))", [&](const Request& request, Response& response){ manager.ListUserOrders(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Post(R"(/vendeg/rendeles)", [&](const Request& request, Response& response){ manager.PlaceUserOrder(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
 
     Post(R"(/etterem/etel/torles/(\d+))", [&](const Request& request, Response& response){ manager.DeleteFood(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Post(R"(/cimke/etel/torles/(\d+))", [&](const Request& request, Response& response){ manager.DeleteFoodTag(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
