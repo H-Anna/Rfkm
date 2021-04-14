@@ -1,0 +1,110 @@
+<div></div>
+<div class="bg">
+
+  <nav class="navbar navbar-expand-lg sticky-top ">
+    <a class="navbar-brand" href="#">Kezdőlap</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" routerLink="/etteremreg">Étterem regisztrálása <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/futarreg">Futárként regisztrálok</a>
+        </li>
+
+      </ul>
+    </div>
+  </nav>
+
+
+  <form class="bejelentkezes feherszoveg" [formGroup]="formBelep">
+    <h2>Bejelentkezés</h2>
+    <div class="form-group">
+      <label for="belepEmail" class="feherszoveg">Email cím</label>
+      <input type="email" class="form-control" id="belepEmail" formControlName="belepEmail">
+    </div>
+    <div class="alert alert-danger" *ngIf="belepEmail.touched && !belepEmail.valid">
+      <div *ngIf="belepEmail.errors && belepEmail.errors.required">Nem adtál meg email címet.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="belepJelszo" class="feherszoveg">Jelszó</label>
+      <input type="password" class="form-control" id="belepJelszo" formControlName="belepJelszo">
+    </div>
+    <div class="alert alert-danger" *ngIf="belepJelszo.touched && !belepJelszo.valid">
+      <div *ngIf="belepJelszo.errors && belepJelszo.errors.required">Nem adtál meg jelszót.</div>
+    </div>
+
+    <a><button type="submit" class="btn btn-primary" [disabled]="!formBelep.valid"
+        (click)="submitBelep(formBelep)">Bejelentkezés</button></a>
+    <div class="alert alert-danger sikertelen" *ngIf="!sikeresBelepes">Bejelentkezés sikertelen</div>
+  </form>
+
+
+
+
+  <form class="bejelentkezes feherszoveg" [formGroup]="formReg" (ngSubmit)="submitVendegReg(formReg)">
+    <h2>Regisztráció vendégként</h2>
+    <div class="form-group">
+      <label for="email" class="feherszoveg">Email cím</label>
+      <input formControlName="email" type="email" class="form-control" id="email"
+        [class.warning]="email.touched && !email.valid">
+
+
+      <label for="jelszo" class="feherszoveg">Jelszó</label>
+      <input formControlName="jelszo" type="password" class="form-control" id="jelszo"
+        [class.warning]="jelszo.touched && !jelszo.valid">
+
+      <label for="vnev" class="feherszoveg">Vezetéknév</label>
+      <input formControlName="vnev" type="text" class="form-control" id="vnev"
+        [class.warning]="vnev.touched && !vnev.valid">
+
+
+      <label for="knev" class="feherszoveg">Keresztév</label>
+      <input formControlName="knev" type="text" class="form-control" id="knev"
+        [class.warning]="knev.touched && !knev.valid">
+
+
+      <div formGroupName="cim" id="cim">
+        <div class="form-group">
+
+          <label for="irszam" class="feherszoveg">Város (irányítószám)</label>
+          <input formControlName="irszam" type="number" class="form-control" id="irszam"
+            [class.warning]="irszam.touched && !irszam.valid">
+
+          <label for="kozterulet" class="feherszoveg">Utca / közterület</label>
+          <input formControlName="kozterulet" type="text" class="form-control" id="kozterulet"
+            [class.warning]="kozterulet.touched && !kozterulet.valid">
+
+          <label for="hazszam" class="feherszoveg">Házszám</label>
+          <input formControlName="hazszam" type="text" class="form-control" id="hazszam"
+            [class.warning]="hazszam.touched && !hazszam.valid">
+
+          <label for="emeletajto" class="feherszoveg">(Emelet, ajtó)</label>
+          <input formControlName="emeletajto" type="text" class="form-control" id="emeletajto">
+
+        </div>
+      </div>
+
+
+      <label for="tel" class="feherszoveg">Telefonszám</label>
+      <p>Formátum: +36301234567</p>
+      <input formControlName="tel" type="text" class="form-control" id="tel"
+        [class.warning]="tel.touched && !tel.valid">
+
+
+
+    </div>
+    <div *ngIf="formReg.touched && !formReg.valid" class="alert alert-danger">A pirossal jelölt mezők kitöltése
+      kötelező.</div>
+    <button type="submit" class="btn btn-primary" [disabled]="!formReg.valid">Regisztráció</button>
+  </form>
+
+  <br><br>
+
+
+</div>

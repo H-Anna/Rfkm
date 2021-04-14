@@ -1,0 +1,23 @@
+<app-etterem-home></app-etterem-home>
+<form [formGroup]="form" (ngSubmit)="submit(form)">
+
+
+  <div class="form-group">
+
+    <label for="kategoria">Új kategória hozzáadása</label><br>
+    <input id="kategoria" formControlName="kategoria"  type="text" class="form-control">
+   
+  </div>
+  
+<button type="button" class="btn btn-primary" [disabled]="!form.valid" (click)="submit(form)">Hozzáadás</button>
+</form>
+
+<mat-card *ngFor="let item of categories" class="card">
+  <mat-card-header>
+    <mat-card-title>{{item.Nev}}</mat-card-title>
+  </mat-card-header>
+
+  <button class="btn btn-primary" (click)=kategoriaTorles(item)>Törlés</button>
+
+</mat-card>
+<br><br>

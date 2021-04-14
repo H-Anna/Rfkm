@@ -1,0 +1,25 @@
+<div fxLayout="column" fxFlexFill id="navbar">
+  <div class="header"></div>
+  <mat-toolbar class="fixed-navbar mat-elevation-z10">
+
+    <mat-toolbar-row>
+      <div>
+        <a mat-button> Főoldal </a>
+        <a mat-button [routerLink]="['/vendeg',vendegId,'ettermek']"> Éttermek </a>
+
+        <a mat-button> Profil </a>
+        <a mat-button [routerLink]="['']"> Kijelentkezés </a>
+
+        <!-- ez itt mégse legyen, mert ha elnavigál a kaja hozzáadogatós oldalról akkor nem tud visszlépni
+          <a mat-button id="kosar" [routerLink]="['/vendeg',vendegId,'kosar']"> Kosaram <mat-icon aria-hidden="false" aria-label="Example home icon">shopping_cart</mat-icon> </a>       
+        -->
+
+      </div>
+      <span class="fill-space"></span>
+      
+
+      
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <router-outlet></router-outlet>
+</div>

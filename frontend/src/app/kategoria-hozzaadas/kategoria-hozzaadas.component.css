@@ -1,0 +1,33 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+
+
+
+
+.card{
+    max-width: 400px;
+    margin: 70px;
+    background-color: black;
+}
+
+
+form {
+    padding: 50px;
+    background-color:rgb(190, 189, 189);
+    
+}
+
+form > div{
+    width:50%;
+}
+
+label {
+    font-weight: bold;
+}
+
+.btn-primary:disabled {
+    background-color: rgb(71, 71, 71);
+}
+
+#cim {
+    margin-left: 70px;
+}

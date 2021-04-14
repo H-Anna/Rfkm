@@ -1,0 +1,77 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
+
+
+
+.card{
+    max-width: 800px;
+    padding: 50px;
+    margin: 70px;
+    background-color: black;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+
+
+form {
+    padding: 50px;
+    background-color: #e5e1e1;
+    font-family: 'Poppins', sans-serif;
+}
+
+form > div{
+    width:50%;
+}
+
+label {
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary:disabled {
+    background-color: rgb(71, 71, 71);
+}
+
+#cim {
+    margin-left: 70px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.bg {
+    /* The image used */
+    background-image: url('../../assets/chef.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    
+    height: 100%;
+    margin: 0;
+
+
+    /* Full height */
+    height: 100%;
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+  }
+
+  #ettermek {
+    font-family: 'Poppins', sans-serif;
+    background-color: #651313;
+    color: white;
+    padding-left: 50px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

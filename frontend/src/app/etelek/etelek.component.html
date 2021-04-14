@@ -1,0 +1,97 @@
+<app-etterem-home></app-etterem-home>
+<div class="bg">
+
+  <form [formGroup]="form" (ngSubmit)="submit(form)">
+    <h2>Új étel felvitele</h2>
+    <div class="form-group">
+
+      <label for="kategoria">Kategória</label><br>
+      <select id="kategoria" formControlName="kategoria" class="form-control">
+        <option></option>
+        <option *ngFor="let item of categories" [value]="item.CimkeID">{{item.Nev}}</option>
+      </select>
+      <div class="alert alert-danger" *ngIf="kategoria.touched && !kategoria.valid">
+        <div *ngIf="kategoria.errors && kategoria.errors.required">Nem adtad meg a kategóriát.</div>
+      </div>
+
+      <label for="nev">Étel neve</label><br>
+      <input id="nev" formControlName="nev" type="text" class="form-control">
+      <div class="alert alert-danger" *ngIf="nev.touched && !nev.valid">
+        <div *ngIf="nev.errors && nev.errors.required">Nem adtad meg az étel nevét.</div>
+      </div>
+
+
+      <label for="ar">Ár</label><br>
+      <input id="ar" formControlName="ar" type="number" class="form-control">
+      <div class="alert alert-danger" *ngIf="ar.touched && !ar.valid">
+        <div *ngIf="ar.errors && ar.errors.required">Nem adtad meg az árat.</div>
+      </div>
+
+      <label for="etelKep">Kép feltöltése: </label><br>
+      <input type="text" class="form-control" id="etelKep" formControlName="etelKep" (change)="onSelectImage()">
+      <br><br>
+      <div *ngIf="etelKep.touched">
+        <label>A kiválasztott kép:</label><br>
+        <img [src]="imgUrl" width="200"> <br />
+        <br><br>
+      </div>
+
+      <label for="leiras">Leírás</label>
+      <p>Adj meg egy rövid leírást az ételről</p>
+      <input id="leiras" formControlName="leiras" type="text" class="form-control">
+      <div class="alert alert-danger" *ngIf="leiras.touched && !leiras.valid">
+        <div *ngIf="leiras.errors && leiras.errors.required">Nem adtad meg a leírást.</div>
+      </div>
+
+
+      <br>
+      <select formControlName="allergenek" name="allergenek" id="allergenek" multiple class="form-control">
+        <option *ngFor="let item of allergenek_tomb" [value]="item.CimkeID">{{item.Nev}}</option>
+      </select>
+
+
+      <!-- Ez még most nem kell
+      <label for="akcio">Akció</label>
+      <input id="akcio" formControlName="akcio" type="text" class="form-control">
+      -->
+
+      <br>
+      <h6>Ha ez az étel egész nap elérhető, hagyd ki ezeket a mezőket</h6>
+      <label for="ettol">Elérhető ettől</label>
+      <input id="ettol" formControlName="ettol" type="number" class="form-control">
+
+      <label for="eddig">Elérhető eddig</label>
+      <input id="eddig" formControlName="eddig" type="number" class="form-control">
+
+
+    </div>
+    <button type="button" class="btn btn-primary" [disabled]="!form.valid" (click)="submit(form)">Hozzáadás</button>
+  </form>
+
+
+
+
+
+  <h2 id="etelei">Az étterem ételei:</h2>
+  <mat-card *ngFor="let item of etelek" class="card">
+    <mat-card-header>
+      <mat-card-title>{{item.Nev}}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p>Leírás: {{item.Leiras}}</p>
+    </mat-card-content>
+
+    <mat-card-content>
+      <p>{{item.Ar}} Ft</p>
+    </mat-card-content>
+
+    <mat-card-content>
+      <img [src]="item.Kep | safe" alt="" width="300px">
+    </mat-card-content>
+
+    <button class="btn btn-primary" (click)=etelTorlese(item)>Törlés</button>
+
+  </mat-card>
+  <br><br>
+</div>

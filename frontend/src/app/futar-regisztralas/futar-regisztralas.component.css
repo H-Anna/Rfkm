@@ -1,0 +1,93 @@
+
+@import "~bootstrap/dist/css/bootstrap.css";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
+
+form {
+    padding: 20px;
+    width: 50%;
+}
+
+label {
+    margin-top: 10px;
+    font-family: 'Poppins',sans-serif;
+    color: white;
+    font-size: large;
+}
+
+p {
+    font-family: 'Poppins',sans-serif;
+    color: white;
+    font-size: medium;
+}
+
+h1 {
+    font-family: 'Poppins',sans-serif;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.283);
+    padding: 20px;
+    position: sticky;
+    font-weight: bold;
+}
+
+.btn-primary:disabled {
+    background-color: rgb(145, 145, 145);
+}
+
+#cim {
+    margin-left: 30px;
+}
+
+input {
+    max-width: 800px;
+}
+
+.table {
+    font-family: 'Poppins',sans-serif;
+    color: white;
+}
+    .bg {
+      /* The image used */
+      background-image: url('../../assets/delivery-smaller.jpg');
+      background-attachment: fixed;
+      background-size: cover;
+      
+      height: 100%;
+      margin: 0;
+
+
+      /* Full height */
+      height: 100%;
+
+      /* Center and scale the image nicely */
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+
+
+      overflow-x: hidden;
+      overflow-y: scroll;
+
+    }
+
+
+
+    .btn-primary {
+      background: rgb(2, 1, 1);
+      border: none;
+    }
+
+    form {
+        padding: 20px;
+        border-radius: 20px;
+        margin-top: 30px;
+        margin-right: 150px;
+        margin-left: 50px;
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+.form-control {
+    margin-bottom: 25px;
+}
+
+
+

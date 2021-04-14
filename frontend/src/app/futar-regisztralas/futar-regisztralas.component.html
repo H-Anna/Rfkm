@@ -1,0 +1,176 @@
+<div id="page" class="bg">
+    <h1>Regisztrálás futárként</h1>
+    <form [formGroup]="form" (ngSubmit)="submit(form)">
+
+        <div class="form-group">
+            <label for="email">Email cím</label>
+            <input id="email" formControlName="email" type="text" class="form-control">
+            <div class="alert alert-danger" *ngIf="email.touched && !email.valid">
+                <!---valid az generic, az errors segítségével lehet specifikus hibaüzeneteket kiírni-->
+                <div *ngIf="email.errors && email.errors.required">Nem adtál meg email címet.</div>
+            </div>
+
+
+            <label for="jelszo">Jelszó</label>
+            <input id="jelszo" formControlName="jelszo" type="password" class="form-control">
+            <div class="alert alert-danger" *ngIf="jelszo.touched && !jelszo.valid">
+                <div *ngIf="jelszo.errors && jelszo.errors.required">Nem adtál meg jelszót.</div>
+            </div>
+
+
+            <label for="vnev">Vezetéknév</label>
+            <input id="vnev" formControlName="vnev" type="text" class="form-control">
+            <div class="alert alert-danger" *ngIf="vnev.touched && !vnev.valid">
+                <div *ngIf="vnev.errors && vnev.errors.required">Nem adtál meg vezetéknevet.</div>
+            </div>
+
+            <label for="knev">Keresztnév</label>
+            <input id="knev" formControlName="knev" type="text" class="form-control">
+            <div class="alert alert-danger" *ngIf="knev.touched && !knev.valid">
+                <div *ngIf="knev.errors && knev.errors.required">Nem adtál meg keresztnevet.</div>
+            </div>
+
+            <label>Add meg a települések irányítószámát, ahova vállalod a kiszállítást:</label>
+            <input type="number" class="form-control" (keyup.enter)="irszamHozzaad(irszam)" #irszam>
+            <ul class="list-group">
+                <li *ngFor="let irsz of irszamok.controls" class="list-group-item" (click)=irszamEltavolit(irsz)> {{ irsz.value }}
+                </li>
+            </ul>           
+            <div class="alert alert-danger" *ngIf="this.irszamok.length == 0">
+                Minimum egy irányítószám megadása kötelező.
+            </div>
+
+
+
+
+            <div formGroupName="mikorVallal">
+                <label>Add meg, hogy melyik napokon mettől meddig vállalod a kiszállítást</label>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Mettől</th>
+                            <th scope="col">Meddig</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <th scope="row">Hétfő</th>
+                            <td> <select formControlName="hetfoKezd" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select>
+                            </td>
+                            <td> <select formControlName="hetfoBefejez" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row">Kedd</th>
+                            <td> <select formControlName="keddKezd" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                            <td> <select formControlName="keddBefejez" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Szerda</th>
+                            <td> <select formControlName="szerdaKezd" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                            <td> <select formControlName="szerdaBefejez" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Csütörtök</th>
+                            <td> <select formControlName="csutKezd" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                            <td> <select formControlName="csutBefejez" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Péntek</th>
+                            <td> <select formControlName="pentKezd" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                            <td> <select formControlName="pentBefejez" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Szombat</th>
+                            <td> <select formControlName="szoKezd" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                            <td> <select formControlName="szoBefejez" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Vasárnap</th>
+                            <td> <select formControlName="vasKezd" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                            <td> <select formControlName="vasBefejez" class="form-control">
+                                    <option value=""></option>
+                                    <option *ngFor="let ora of orak" [value]="ora">
+                                        {{ora}}:00
+                                    </option>
+                                </select></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <button type="button" class="btn btn-primary" [disabled]="!form.valid"
+                (click)="submit(form)">Regisztrálás</button>
+        </div>
+    </form>
+
+</div>
