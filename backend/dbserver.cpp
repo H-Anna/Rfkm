@@ -1423,7 +1423,7 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
     //Ellenőrizzük hogy van-e rendelés a kapott ID-jű vendéghez
     int vendegID = data.value("VendegID").toInt();
 
-    QString str = "SELECT re.RendelesID, SzallitasiMod, VarakozasiIdo, Allapot, etel.EtelID, Mennyi \
+    QString str = "SELECT re.RendelesID, FutarID, SzallitasiMod, VarakozasiIdo, rea.Allapot, etel.EtelID, Mennyi \
         FROM Rendeles AS re \
         JOIN Kosar AS ko ON re.RendelesID = ko.RendelesID \
         JOIN Etel AS etel ON etel.EtelID = ko.EtelID \
@@ -1474,21 +1474,22 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
             currentID = newID;
 
             jsonRendeles.insert("RendelesID", query.value(0).toInt());
-            jsonRendeles.insert("SzallitasiMod", query.value(1).toInt());
-            jsonRendeles.insert("VarakozasiIdo", query.value(2).toDouble());
-            jsonRendeles.insert("Allapot", query.value(3).toDouble());
+            jsonRendeles.insert("FutarID", query.value(1).toInt());
+            jsonRendeles.insert("SzallitasiMod", query.value(2).toInt());
+            jsonRendeles.insert("VarakozasiIdo", query.value(3).toDouble());
+            jsonRendeles.insert("Allapot", query.value(4).toDouble());
 
 
             jsonEtelObject = QJsonObject();
-            jsonEtelObject.insert("EtelID", query.value(4).toInt());
-            jsonEtelObject.insert("Mennyi", query.value(5).toInt());
+            jsonEtelObject.insert("EtelID", query.value(5).toInt());
+            jsonEtelObject.insert("Mennyi", query.value(6).toInt());
 
             jsonEtelekArray.push_back(jsonEtelObject);
 
         } else {
             jsonEtelObject = QJsonObject();
-            jsonEtelObject.insert("EtelID", query.value(4).toInt());
-            jsonEtelObject.insert("Mennyi", query.value(5).toInt());
+            jsonEtelObject.insert("EtelID", query.value(5).toInt());
+            jsonEtelObject.insert("Mennyi", query.value(6).toInt());
 
             jsonEtelekArray.push_back(jsonEtelObject);
         }
@@ -1561,6 +1562,13 @@ void DBServer::queryPlaceUserOrder(const QVariantMap &data, QString *message)
     query.prepare(str);
     query.addBindValue(etelID);
     query.addBindValue(mennyi);
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message, true))
+        return;
+
+    str = "INSERT INTO RendelesAllapot (RendelesID, Allapot) VALUES ("+ QString::number(rendelesID) +", 'Feldolgozás alatt')";
+    query.prepare(str);
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
 
     if (!ExecuteQuery(query, message, true))
