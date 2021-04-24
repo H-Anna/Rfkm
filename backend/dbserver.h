@@ -21,28 +21,31 @@ public:
 
     void queryCreateFood(const QVariantMap &data, QString *message);
     void queryCreateFoodTag(const QVariantMap &data, QString *message);
+    void queryCreateDiscount(const QVariantMap &data, QString *message);
+    void queryPlaceUserOrder(const QVariantMap &data, QString *message);
 
     void queryListFood(const QVariantMap &data, QString *message, QString *QueryMessage);
     void queryListRestaurant(const QVariantMap &data, QString *message, QString *QueryMessage);
+    void queryListRestaurantOrders(const QVariantMap &data, QString *message, QString* queryMsg);
     void queryListRestaurantTag(QString *message, QString *QueryMessage);
     void queryListFoodTag(QString *message, QString *QueryMessage);
+    void queryListPaymentTag(const QVariantMap &data,QString *message, QString *QueryMessage);
+    void queryListUserOrders(const QVariantMap &data, QString *message, QString* queryMsg);
 
     void queryUpdateFood(const QVariantMap &data, QString *message);
     void queryUpdateRestaurantBasics(const QVariantMap &data, QString *message);
     void queryUpdateRestaurantAddress(const QVariantMap &data, QString *message);
-    void querySetRestaurantOpenHours(const QVariantMap& data, QString* message);
-    void queryListRestaurantOrders(const QVariantMap &data, QString *message, QString* queryMsg);
+    void querySetRestaurantOpenHours(const QVariantMap& data, QString* message); 
     void querySetWorkerShare(const QVariantMap& data, QString* message);
-
+    void queryUpdateDiscount(const QVariantMap& data, QString* message);
     void queryUpdateUser(const QVariantMap &data, QString *message);
-    void queryListUserOrders(const QVariantMap &data, QString *message, QString* queryMsg);
-    void queryPlaceUserOrder(const QVariantMap &data, QString *message);
+    void queryUpdateWorker(const QVariantMap &data, QString *message);
+    void queryUpdateWorkerHours(const QVariantMap &data, QString *message);
 
     void queryDeleteFood(const QVariantMap &data, QString *message);
     void queryDeleteFoodTag(const QVariantMap &data, QString *message);
+    void queryDeleteDiscount(const QVariantMap &data, QString *message);
 
-
-    bool insertUserAddress(const QVariantMap &cim, QString *message, QString &fields, QString &binds);
 private:
     QSqlDatabase db;
     QString dbName;
@@ -62,6 +65,7 @@ private:
     bool insertRestaurantOpenHours(const QVariantList &nyitva, QString *message, const int etteremID);
     bool insertWorkerOpenHours(const QVariantList &mikor, QString *message, const int futarID);
     bool insertWorkerDelivers(const QVariantList &szallit, QString *message, const int futarID);
+    bool insertUserAddress(const QVariantMap &cim, QString *message, QString &fields, QString &binds);
 
 };
 
