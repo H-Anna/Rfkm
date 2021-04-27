@@ -757,11 +757,11 @@ void DBServer::queryPlaceUserOrder(const QVariantMap &data, QString *message)
     if (!ExecuteQuery(query, message, true))
         return;
 
-    str = "INSERT INTO RendelesAllapot (RendelesID, Allapot) VALUES ("+ QString::number(rendelesID) +", 'Feldolgozás alatt')";
+    str = "INSERT INTO RendelesAllapot (RendelesID, Allapot) VALUES ("+ QString::number(rendelesID) +", 'Feldolgozas alatt')";
     query.prepare(str);
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
 
-    if (!ExecuteQuery(query, message, true))
+    if (!ExecuteQuery(query, message))
         return;
 
     //Végül az elindított tranzakciót befejezzük
@@ -770,6 +770,7 @@ void DBServer::queryPlaceUserOrder(const QVariantMap &data, QString *message)
     return;
 
 }
+
 
 
 void DBServer::queryListFood(const QVariantMap &data, QString *message, QString *QueryMessage)
