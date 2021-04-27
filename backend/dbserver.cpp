@@ -1141,6 +1141,8 @@ void DBServer::queryListRestaurantOrders(const QVariantMap &data, QString *messa
             jsonEtelekArray.push_back(jsonEtelObject);
         }
     }
+    jsonRendeles.insert("Etelek", jsonEtelekArray);
+    jsonArray.push_back(jsonRendeles);
 
     *queryMsg = QJsonDocument(jsonArray).toJson(QJsonDocument::Compact).toStdString().c_str();
 
