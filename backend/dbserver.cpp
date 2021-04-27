@@ -1275,7 +1275,7 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
     QString str = "SELECT re.RendelesID, FutarID, SzallitasiMod, VarakozasiIdo, rea.Allapot, etel.EtelID, Mennyi \
         FROM Rendeles AS re \
         JOIN Kosar AS ko ON re.RendelesID = ko.RendelesID \
-        JOIN Etel AS etel ON etel.EtelID = ko.EtelID \
+        LEFT JOIN Etel AS etel ON etel.EtelID = ko.EtelID \
         JOIN RendelesAllapot AS rea ON rea.RendelesID = re.RendelesID \
         WHERE re.RendeloID = " + QString::number(vendegID) + " \
         ORDER BY re.RendelesID DESC";
@@ -1343,6 +1343,8 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
             jsonEtelekArray.push_back(jsonEtelObject);
         }
     }
+    jsonRendeles.insert("Etelek", jsonEtelekArray);
+    jsonArray.push_back(jsonRendeles);
 
     *queryMsg = QJsonDocument(jsonArray).toJson(QJsonDocument::Compact).toStdString().c_str();
 
