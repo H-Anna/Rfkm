@@ -1,3 +1,5 @@
+import { ModositasService } from './services/modositas.service';
+
 import { EtelService } from './services/etel.service';
 import { BelepesService } from './services/belepes.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -14,6 +16,7 @@ import { AppComponent } from './app.component';
 import { BejelentkezesComponent } from './bejelentkezes/bejelentkezes.component';
 import { EtteremRegisztralasaComponent } from './etterem-regisztralasa/etterem-regisztralasa.component';
 import { EtteremHomeComponent } from './etterem-home/etterem-home.component';
+import { EtteremRendelesekComponent } from './etterem-rendelesek/etterem-rendelesek.component';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
@@ -38,6 +41,9 @@ import { FutarRegisztralasComponent } from './futar-regisztralas/futar-regisztra
 import { FutarHomeComponent } from './futar-home/futar-home.component';
 import { EtelekRendelesComponent } from './etelek-rendeles/etelek-rendeles.component';
 import { KosarComponent } from './kosar/kosar.component';
+import { EtteremBeallitasokComponent } from './etterem-beallitasok/etterem-beallitasok.component';
+import { FutarElerhetosegComponent } from './futar-elerhetoseg/futar-elerhetoseg.component';
+import { VendegRendelesekComponent } from './vendeg-rendelesek/vendeg-rendelesek.component';
 
 
 @NgModule({
@@ -54,7 +60,11 @@ import { KosarComponent } from './kosar/kosar.component';
     FutarRegisztralasComponent,
     FutarHomeComponent,
     EtelekRendelesComponent,
-    KosarComponent
+    KosarComponent,
+    EtteremBeallitasokComponent,
+    EtteremRendelesekComponent,
+    FutarElerhetosegComponent,
+    VendegRendelesekComponent
   ],
   imports: [
     CommonModule,
@@ -79,15 +89,19 @@ import { KosarComponent } from './kosar/kosar.component';
       //empty path represents the home page = default route
       { path: '', component: BejelentkezesComponent },
       { path: 'etteremreg', component: EtteremRegisztralasaComponent },      
-      { path: 'etterem/:id', component: EtteremHomeComponent },
-      { path: 'etterem/:id/etelek', component: EtelekComponent, pathMatch: 'full' },
-      { path: 'vendeg/:id', component: VendegHomeComponent },
-      { path: 'vendeg/:id/ettermek', component: EttermekComponent, pathMatch: 'full' },
-      { path: 'etterem/:id/kategoriak', component: KategoriaHozzaadasComponent, pathMatch: 'full' },
+      { path: 'etterem/:etteremId', component: EtteremHomeComponent },
+      { path: 'etterem/:etteremId/etelek', component: EtelekComponent, pathMatch: 'full' },
+      { path: 'vendeg/:vendegId', component: VendegHomeComponent },
+      { path: 'vendeg/:vendegId/ettermek', component: EttermekComponent, pathMatch: 'full' },
+      { path: 'etterem/:etteremId/kategoriak', component: KategoriaHozzaadasComponent, pathMatch: 'full' },
       { path: 'futarreg', component: FutarRegisztralasComponent },
-      { path: 'futar/:id', component: FutarHomeComponent },
+      { path: 'futar/:futarId', component: FutarHomeComponent },
       { path: 'vendeg/:vendegId/ettermek/:etteremId/rendeles', component: EtelekRendelesComponent, pathMatch: 'full'},
-      { path: 'vendeg/:vendegId/kosar', component: KosarComponent, pathMatch: 'full'},
+      { path: 'vendeg/:vendegId/kosar', component: KosarComponent, pathMatch: 'full'},    //ez kell??
+      { path: 'etterem/:etteremId/beallitasok', component: EtteremBeallitasokComponent, pathMatch: 'full'},
+      { path: 'etterem/:etteremId/rendelesek', component: EtteremRendelesekComponent, pathMatch: 'full'},
+      { path: 'futar/:futarId/modositas', component: FutarElerhetosegComponent, pathMatch: 'full' },
+      { path: 'vendeg/:vendegId/rendelesek', component: VendegRendelesekComponent, pathMatch: 'full'},
       
 
      
@@ -102,7 +116,7 @@ import { KosarComponent } from './kosar/kosar.component';
     ),
     BrowserAnimationsModule
   ],
-  providers: [RegisztracioService, BelepesService ,EtelService],
+  providers: [RegisztracioService, BelepesService ,EtelService, ModositasService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

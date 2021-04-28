@@ -37,7 +37,7 @@ export class EttermekComponent implements OnInit {
       params => {
         //this.irszam = +params.get('irszam');
         console.log(params);
-        this.vendegId = +params.get('id');
+        this.vendegId = +params.get('vendegId');
       }
     );
   }

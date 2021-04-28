@@ -3,11 +3,12 @@ export class Rendeles {
     FizetesiMod: string;
     SzallitasiMod: string;
     EtelIdk: number[] = [];
-    Etelek: {EtelID: number, Mennyi: number}[] = [];
+    Etelek: {EtelID: number,EtelNev: string, Mennyi: number}[] = [];
+    OsszesenFt: number = 0;
     constructor(vendegId: number){
         this.VendegId = vendegId;
     }
-    addEtel(etelId){
+    addEtel(etelId,etelNev,etelAr){
         if(this.vanIlyen(etelId)){
             //adott id-jú étel mennyiségének növelése eggyel
             this.Etelek.forEach(item => {
@@ -15,25 +16,28 @@ export class Rendeles {
                     item.Mennyi++;
                 }
             });
+            this.OsszesenFt += etelAr;
         }
         else{
-            this.Etelek.push({"EtelID":etelId, "Mennyi": 1});
+            this.Etelek.push({"EtelID":etelId,"EtelNev":etelNev,"Mennyi": 1});
             this.EtelIdk.push(etelId);
+            this.OsszesenFt += etelAr;
         }        
     }
-    subtractEtel(etelId){
+    subtractEtel(etelId, etelAr){
         //adott id-jú étel mennyiségének csökkentése eggyel
         if(this.vanIlyen(etelId)){
             this.Etelek.forEach(item => {
                 if(item.EtelID==etelId){
                     item.Mennyi--;
+                    this.OsszesenFt -= etelAr;
                     console.log(item);
                     if(item.Mennyi==0){
                         let idx = this.EtelIdk.indexOf(etelId);
                         this.EtelIdk.splice(idx,1);
                         this.Etelek.forEach(etel => {
                             if(etel.EtelID == etelId){
-                                let idx2 = this.Etelek.indexOf({"EtelID":etelId,"Mennyi":etel.Mennyi});
+                                let idx2 = this.Etelek.indexOf({"EtelID":etelId,"EtelNev":etel.EtelNev,"Mennyi":etel.Mennyi});
                                 this.Etelek.splice(idx2,1);
                             }
                         });
@@ -42,6 +46,7 @@ export class Rendeles {
             });
         }
     }
+
     getEtelById(id:number){
         let idx = this.EtelIdk.indexOf(id);
         if(idx > -1){

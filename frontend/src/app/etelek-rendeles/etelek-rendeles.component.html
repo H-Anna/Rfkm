@@ -1,43 +1,77 @@
-<app-vendeg-home></app-vendeg-home>
-<div *ngIf="!tovabb">
-<h2 id="etelei">Az étterem ételei:</h2>
-<mat-card *ngFor="let item of etelek" class="card">
-    <mat-card-header>
-        <mat-card-title>{{item.Nev}}</mat-card-title>
-    </mat-card-header>
+<!DOCTYPE html>
+<div class="page">
+    <app-vendeg-home></app-vendeg-home>
 
-    <mat-card-content>
-        <p>Leírás: {{item.Leiras}}</p>
-    </mat-card-content>
+    <h2 id="etelei">Az étterem ételei:</h2>
+    <div class="mycontainer">
 
-    <mat-card-content>
-        <p>{{item.Ar}} Ft</p>
-    </mat-card-content>
+        <div class="grid-item" id="etelek">
+            <mat-card *ngFor="let item of etelek" class="card">
+                <mat-card-header>
+                    <mat-card-title>{{item.Nev}}</mat-card-title>
+                </mat-card-header>
 
-    <mat-card-content>
-        <img [src]="item.Kep | safe" alt="" width="300px">
-    </mat-card-content>
+                <mat-card-content>
+                    <p>Leírás: {{item.Leiras}}</p>
+                </mat-card-content>
 
-    <mat-card-content>
-        <button class="btn btn-primary" (click)="this.rendeles.addEtel(item.EtelID,1)">+</button>
-    </mat-card-content>
+                <mat-card-content>
+                    <p>{{item.Ar}} Ft</p>
+                </mat-card-content>
 
-    <mat-card-content>
-        <button class="btn btn-primary" (click)="this.rendeles.subtractEtel(item.EtelID)">-</button>
-    </mat-card-content>
+                <mat-card-content>
+                    <img [src]="item.Kep | safe" alt="" width="300px">
+                </mat-card-content>
 
-    <mat-card-content *ngIf="rendeles.vanIlyen(item.EtelID)">
-        <p>Kosárban {{this.rendeles.getEtelById(item.EtelID).Mennyi}} darab</p>
-    </mat-card-content>
+                <mat-card-content>
+                    <button class="btn btn-primary"
+                        (click)="this.rendeles.addEtel(item.EtelID,item.Nev,item.Ar,1)">+</button>
+                </mat-card-content>
 
-    <mat-card-content *ngIf="rendeles.vanIlyen(item.EtelID)">
-        <p>{{this.rendeles.getEtelById(item.EtelID).Mennyi * item.Ar}} Ft</p>
-    </mat-card-content>
+                <mat-card-content>
+                    <button class="btn btn-primary" (click)="this.rendeles.subtractEtel(item.EtelID, item.Ar)">-</button>
+                </mat-card-content>
 
-</mat-card>
+                <mat-card-content *ngIf="rendeles.vanIlyen(item.EtelID)">
+                    <p>Kosárban {{this.rendeles.getEtelById(item.EtelID).Mennyi}} darab</p>
+                </mat-card-content>
 
-<button class="btn btn-primary tovabb" (click)="rendel()">Tovább a megrendeléshez</button>
+                <mat-card-content *ngIf="rendeles.vanIlyen(item.EtelID)">
+                    <p>{{this.rendeles.getEtelById(item.EtelID).Mennyi * item.Ar}} Ft</p>
+                </mat-card-content>
+
+            </mat-card>
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+            <!--ezek nélkül levágja az alját xD-->
+
+        </div>
+        <div class="grid-item" id="form">
+            
+            <form action="" [formGroup]="form" class="rendelesForm">
+                <h5>Kosár:</h5>
+                <div *ngFor="let etel of rendeles.Etelek">
+                    <span>{{etel.EtelNev}}</span> <span style="float: right;">{{etel.Mennyi}}</span>
+                    <hr>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <span>Fizetendő:</span> <span style="float: right;">{{rendeles.OsszesenFt}} Ft</span>
+                </div>
+
+                <label for="fizmod">Fizetési mód:</label>
+                <select name="" id="fizmod" class="form-control" formControlName="fizmod">
+                    <option value="Utánvét">Utánvét</option>
+                    <!--Itt még mik vannak? -->
+                </select><br>
+                <label for="szallmod">Szállítási mód:</label>
+                <select name="" id="szallmod" class="form-control" formControlName="szallmod">
+                    <option value="Kiszállítás">Kiszállítás</option>
+                    <option value="Átvétel">Személyes átvétel</option>
+                </select><br>
+                <button type="submit" class="btn btn-primary" (click)="rendelesElkuldese()">Rendelés elküldése</button>
+            </form>
+        </div>
+
+
+    </div>
 </div>
-
-
-<app-kosar *ngIf="tovabb" [rendeles]="rendeles"></app-kosar>

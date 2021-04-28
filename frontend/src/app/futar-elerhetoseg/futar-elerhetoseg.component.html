@@ -1,0 +1,128 @@
+<app-futar-home></app-futar-home>
+<form [formGroup]="form" (ngSubmit)="submit(form)">
+    <h2>Elérhetőség megváltoztatása!</h2>
+        <label>Írd be amit szeretnél megváltozatatni!</label>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Mettől</th>
+                    <th scope="col">Meddig</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+                <tr>
+                    <th scope="row">Hétfő</th>
+                    <td> <select formControlName="hetfoKezd" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select>
+                    </td>
+                    <td> <select formControlName="hetfoBefejez" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                </tr>
+    
+                <tr>
+                    <th scope="row">Kedd</th>
+                    <td> <select formControlName="keddKezd" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                    <td> <select formControlName="keddBefejez" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <th scope="row">Szerda</th>
+                    <td> <select formControlName="szerdaKezd" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                    <td> <select formControlName="szerdaBefejez" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <th scope="row">Csütörtök</th>
+                    <td> <select formControlName="csutKezd" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                    <td> <select formControlName="csutBefejez" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <th scope="row">Péntek</th>
+                    <td> <select formControlName="pentKezd" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                    <td> <select formControlName="pentBefejez" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <th scope="row">Szombat</th>
+                    <td> <select formControlName="szoKezd" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                    <td> <select formControlName="szoBefejez" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <th scope="row">Vasárnap</th>
+                    <td> <select formControlName="vasKezd" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                    <td> <select formControlName="vasBefejez" class="form-control">
+                            <option value=""></option>
+                            <option *ngFor="let ora of orak" [value]="ora">
+                                {{ora}}:00
+                            </option>
+                        </select></td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <button type="button" class="btn btn-primary" (click)="submit(form)">Módosítás</button>
+        </div>
+        
+</form>

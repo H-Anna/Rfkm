@@ -5,9 +5,7 @@
       <mat-toolbar-row>
         <div>
           <a mat-button> Főoldal </a>
-          <a mat-button [routerLink]=""> idk </a>
-          <a mat-button [routerLink]=""> idk </a>
-          <a mat-button> Profil </a>
+          <a mat-button [routerLink]="['/futar',futarId,'modositas']"> Profil </a>
           <a mat-button [routerLink]="['']"> Kijelentkezés </a>
   
   
@@ -16,6 +14,5 @@
         <span class="fill-space"></span>
       </mat-toolbar-row>
     </mat-toolbar>
-    <h1>The main page of futar with the id: {{futarId}}</h1>
     <router-outlet></router-outlet>
   </div>

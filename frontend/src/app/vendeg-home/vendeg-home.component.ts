@@ -15,7 +15,7 @@ export class VendegHomeComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       console.log(params);
-      this.vendegId = +params.get('id');
+      this.vendegId = +params.get('vendegId');
     })
   }
 

@@ -1,0 +1,15 @@
+<app-etterem-home></app-etterem-home>
+
+<form [formGroup]="form1" (ngSubmit)="submit1(form1)">
+    <h2>Futár részesedésének beállítása</h2>
+    <div class="form-group">        
+
+      <label for="reszesedes">Részesedés</label><br>
+      <input id="reszesedes" formControlName="reszesedes" type="number" class="form-control">
+      <div class="alert alert-danger" *ngIf="reszesedes.touched && !reszesedes.valid">
+        <div *ngIf="reszesedes.errors && reszesedes.errors.required">Nem adtad meg a részesedést.</div>
+      </div>
+ 
+    </div>
+    <button type="button" class="btn btn-primary" [disabled]="!form1.valid" (click)="submit1(form1)">Mentés</button>
+  </form>

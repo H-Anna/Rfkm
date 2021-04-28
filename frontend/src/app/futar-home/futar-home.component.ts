@@ -15,7 +15,7 @@ export class FutarHomeComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       console.log(params);
-      this.futarId = +params.get('id');
+      this.futarId = +params.get('futarId');
     })
   }
 

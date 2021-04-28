@@ -1,0 +1,14 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
+
+
+form {
+    padding: 50px;
+    background-color:rgb(190, 189, 189);
+    font-family: 'Poppins', sans-serif;
+}
+
+label {
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+}

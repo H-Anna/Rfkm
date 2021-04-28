@@ -17,7 +17,7 @@ export class EtteremHomeComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       console.log(params);
-      this.etteremId = +params.get('id');
+      this.etteremId = +params.get('etteremId');
     })
   }
 

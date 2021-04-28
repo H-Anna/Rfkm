@@ -45,7 +45,7 @@ export class EtelekComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(
       params => {
-        this.etteremId = +params.get('id');
+        this.etteremId = +params.get('etteremId');
 
       }
     );
