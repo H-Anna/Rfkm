@@ -39,18 +39,31 @@ public:
     void SetWorkerShare(const Request& request, Response& response);
     void UpdateDiscount(const Request &request, Response &response);
     void UpdateUser(const Request &request, Response &response);
-    void UpdateWorker(const httplib::Request &request, Response &response);
-    void UpdateWorkerHours(const httplib::Request &request, Response &response);
+    void UpdateWorker(const Request &request, Response &response);
+    void UpdateWorkerHours(const Request &request, Response &response);
 
     void DeleteFood(const Request &request, Response &response);
     void DeleteFoodTag(const Request &request, Response &response);
     void DeleteDiscount(const Request &request, Response &response);
 
+
+
+
+    void GetSimpleFoodInfo(const Request& request, Response& response);
+    void UpdateRestaurantOrder(const Request& request, Response& response);
+    void ListWorkers(const Request &request, Response &response);
+    void ListWorkerOrders(const Request &request, Response &response);
+    void UpdateOrderPriorityByWorker(const Request &request, Response &response);
+    void RejectWorkerOrder(const Request &request, Response &response);
+    void CompleteWorkerOrder(const Request &request, Response &response);
+    void ShowWorkerShare(const Request &request, Response &response);
+
 private:
     DBServer database;
 
     void JSONMessage(Response& response, int status, const QString& message);
-    bool CheckJSON(const QJsonObject& toCheck, const QStringList& requiredKeys);
+    bool JSONHasAllKeys(const QJsonObject& toCheck, const QStringList& requiredKeys);
+    bool JSONHasAnyKey(const QJsonObject &toCheck, const QStringList &requiredKeys);
 };
 
 #endif // REQUESTMANAGER_H

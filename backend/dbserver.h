@@ -46,6 +46,19 @@ public:
     void queryDeleteFoodTag(const QVariantMap &data, QString *message);
     void queryDeleteDiscount(const QVariantMap &data, QString *message);
 
+
+
+
+    void queryListWorkers(QString *message, QString *QueryMessage);
+    void queryListWorkerOrders(const QVariantMap &data, QString *message, QString *QueryMessage);
+    void queryGetSimpleFoodInfo(const QVariantMap &data, QString *message, QString *QueryMessage);
+    void queryUpdateRestaurantOrders(const QVariantMap &data, QString *message);
+
+    void queryUpdateOrderPriorityByWorker(const QVariantMap &data, QString *message);
+    void queryRejectWorkerOrder(const QVariantMap &data, QString *message);
+    void queryCompleteWorkerOrder(const QVariantMap &data, QString *message);
+    void queryShowWorkerShare(const QVariantMap &data, QString *message, QString *QueryMessage);
+
 private:
     QSqlDatabase db;
     QString dbName;

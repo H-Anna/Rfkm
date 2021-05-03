@@ -545,6 +545,49 @@ void DBServer::queryLogin(const QStringList &auth, QString *message, QString *qu
     *queryMsg = QJsonDocument(queryResult).toJson(QJsonDocument::Compact).toStdString().c_str();
 }
 
+void DBServer::queryGetSimpleFoodInfo(const QVariantMap &data, QString *message, QString *QueryMessage)
+{
+
+    cout << "[DBServer] Transaction started" << endl;
+
+    //Biztos ami biztos
+    query.clear();
+
+    //----Etel tábla----
+
+    QString str = "SELECT * FROM Etel WHERE EtteremID =:EtteremID AND EtelID =:EtelID";
+    query.prepare(str);
+    query.bindValue(QString(":EtteremID"), data.value("EtteremID"));
+    query.bindValue(QString(":EtelID"), data.value("EtelID"));
+
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    bool hasRecord = false;
+
+    QJsonObject jsonObject;
+    if (query.next())
+    {
+        hasRecord = true;
+
+        jsonObject.insert("Nev", query.value(2).toString());
+        jsonObject.insert("Ar", query.value(3).toDouble());
+        jsonObject.insert("Kep", query.value(4).toString());
+        jsonObject.insert("Leiras", query.value(5).toString());
+    }
+
+    if (!hasRecord) {
+        *message = "[DBServer] Food or Restaurant with ID doesn't exist";
+        return;
+    }
+
+    *QueryMessage = QJsonDocument(jsonObject).toJson(QJsonDocument::Compact).toStdString().c_str();
+
+    return;
+}
+
 
 void DBServer::queryCreateFood(const QVariantMap &data, QString *message)
 {
@@ -775,11 +818,10 @@ void DBServer::queryPlaceUserOrder(const QVariantMap &data, QString *message)
 
 void DBServer::queryListFood(const QVariantMap &data, QString *message, QString *QueryMessage)
 {
-    if (!db.transaction()) {
-        *message = "[DBServer] Can't open transaction - stopped";
-        return;
-    }
+
     cout << "[DBServer] Transaction started" << endl;
+
+    //Biztos ami biztos
     query.clear();
 
     //----Etel tábla----
@@ -885,17 +927,12 @@ void DBServer::queryListFood(const QVariantMap &data, QString *message, QString 
     QString strFromObj = QJsonDocument(finalJsonObject).toJson(QJsonDocument::Compact).toStdString().c_str();
     *QueryMessage=strFromObj;
 
-
-    db.commit();
     return;
 }
 
 void DBServer::queryListRestaurant(const QVariantMap &data, QString *message, QString *QueryMessage)
 {
-    if (!db.transaction()) {
-        *message = "[DBServer] Can't open transaction - stopped";
-        return;
-    }
+
     cout << "[DBServer] Transaction started" << endl;
     query.clear();
 
@@ -1054,13 +1091,12 @@ void DBServer::queryListRestaurant(const QVariantMap &data, QString *message, QS
     *QueryMessage=strFromObj;
 
 
-    db.commit();
     return;
 }
 
 void DBServer::queryListRestaurantOrders(const QVariantMap &data, QString *message, QString* queryMsg)
 {
-
+    cout << "[DBServer] Transaction started" << endl;
     query.clear();
 
     //Ellenőrizzük hogy van-e rendelés a kapott ID-jű étteremhez
@@ -1148,12 +1184,200 @@ void DBServer::queryListRestaurantOrders(const QVariantMap &data, QString *messa
 
 }
 
-void DBServer::queryListRestaurantTag(QString *message, QString *QueryMessage)
+void DBServer::queryUpdateRestaurantOrders(const QVariantMap &data, QString *message)
 {
+    //Kötelezően indítunk egy tranzakciót. Ha ez nincs, akkor hiányosan kerülhetnek be az adatok
     if (!db.transaction()) {
         *message = "[DBServer] Can't open transaction - stopped";
         return;
     }
+    cout << "[DBServer] Transaction started" << endl;
+
+    query.clear();
+
+    //Az inputot leellenőrizte a RequestManager, tehát az biztosan jó.
+    //Ettől függetlenül még lehetnek null értékek, ezeket mindig ki kell szűrni mielőtt a query
+    //elindul.
+
+    int rendelesID = data.value("RendelesID").toInt();
+    bool vanFutar = data.keys().contains("FutarID");
+    bool vanVarakozas = data.keys().contains("VarakozasiIdo");
+    bool vanAllapot = data.keys().contains("Allapot");
+
+    //----Rendeles tábla----
+
+    if (vanFutar || vanVarakozas) {
+
+        QString rendelesUpdate = "";
+        if (vanFutar) {
+            rendelesUpdate.append("FutarID = " + QString::number(data.value("FutarID").toInt()));
+        }
+        if (vanVarakozas) {
+            if (rendelesUpdate != "")
+                rendelesUpdate.append(", ");
+
+            rendelesUpdate.append("VarakozasiIdo = " + QString::number(data.value("VarakozasiIdo").toInt()));
+        }
+
+        QString str = "UPDATE Rendeles SET"+ rendelesUpdate +" WHERE RendelesID = :RendelesID";
+        query.prepare(str);
+        query.bindValue(":RendelesID", rendelesID);
+        cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+        if (!ExecuteQuery(query, message))
+            return;
+    }
+
+    //----RendelesAllapot tábla----
+
+
+    if (vanAllapot) {
+
+        QString rendelesUpdate = "";
+        rendelesUpdate.append("Allapot = '"+ data.value("Allapot").toString() +"'");
+
+        QString str = "UPDATE RendelesAllapot SET"+ rendelesUpdate +" WHERE RendelesID = :RendelesID";
+        query.prepare(str);
+        query.bindValue(":RendelesID", rendelesID);
+        cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+        if (!ExecuteQuery(query, message))
+            return;
+    }
+
+    //Végül az elindított tranzakciót befejezzük
+    db.commit();
+    return;
+}
+
+void DBServer::queryUpdateOrderPriorityByWorker(const QVariantMap &data, QString *message)
+{
+    //Kötelezően indítunk egy tranzakciót. Ha ez nincs, akkor hiányosan kerülhetnek be az adatok
+    if (!db.transaction()) {
+        *message = "[DBServer] Can't open transaction - stopped";
+        return;
+    }
+    cout << "[DBServer] Transaction started" << endl;
+
+    query.clear();
+
+    //----Rendeles tábla----
+
+    QString str = "UPDATE Rendeles SET Prioritas = :Prioritas \
+        WHERE FutarID = :FutarID AND RendelesID = :RendelesID";
+    query.prepare(str);
+    BindValues(query, data);
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    //Végül az elindított tranzakciót befejezzük
+    db.commit();
+    return;
+}
+
+void DBServer::queryRejectWorkerOrder(const QVariantMap &data, QString *message)
+{
+    //Kötelezően indítunk egy tranzakciót. Ha ez nincs, akkor hiányosan kerülhetnek be az adatok
+    if (!db.transaction()) {
+        *message = "[DBServer] Can't open transaction - stopped";
+        return;
+    }
+    cout << "[DBServer] Transaction started" << endl;
+
+    query.clear();
+
+    //----Rendeles tábla----
+
+    QString str = "UPDATE Rendeles SET FutarID = NULL \
+        WHERE FutarID = :FutarID AND RendelesID = :RendelesID";
+    query.prepare(str);
+    BindValues(query, data);
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    //Végül az elindított tranzakciót befejezzük
+    db.commit();
+    return;
+}
+
+void DBServer::queryCompleteWorkerOrder(const QVariantMap &data, QString *message)
+{
+    //Kötelezően indítunk egy tranzakciót. Ha ez nincs, akkor hiányosan kerülhetnek be az adatok
+    if (!db.transaction()) {
+        *message = "[DBServer] Can't open transaction - stopped";
+        return;
+    }
+    cout << "[DBServer] Transaction started" << endl;
+
+    query.clear();
+
+    //----Rendeles tábla----
+
+    QString str = "UPDATE RendelesAllapot SET Allapot = 'Befejezett' \
+            WHERE RendelesID = :RendelesID";
+    query.prepare(str);
+    BindValues(query, data);
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    //Végül az elindított tranzakciót befejezzük
+    db.commit();
+    return;
+}
+
+void DBServer::queryShowWorkerShare(const QVariantMap &data, QString *message, QString *queryMsg)
+{
+    QString str = "select RE.RendelesID, (SUM(Mennyi * E.Ar)*E2.FutarReszesedes)/100 as Reszesedes from Rendeles RE \
+            join Kosar K on RE.RendelesID = K.RendelesID \
+            join Etel E on K.EtelID = E.EtelID \
+            join Etterem E2 on E.EtteremID = E2.EtteremID \
+            join RendelesAllapot RA on RE.RendelesID = RA.RendelesID \
+            where FutarID = " + data.value("FutarID").toString() + " \
+            and RA.Allapot = 'Befejezett' \
+            group by K.RendelesID";
+    query.prepare(str);
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    QJsonArray jsonArray;
+    int osszesen = 0;
+
+    while (query.next())
+    {
+        QJsonObject jsonObject;
+        jsonObject.insert("RendelesID", query.value(0).toInt());
+        jsonObject.insert("Reszesedes", query.value(1).toInt());
+        osszesen += jsonObject.value("Reszesedes").toInt();
+        jsonArray.push_back(jsonObject);
+
+    }
+
+    if (osszesen == 0) {
+        *message = "[DBServer] No orders completed yet";
+        return;
+    } else {
+        QJsonObject finalJsonObject;
+        finalJsonObject.insert("Rendelesek:", jsonArray);
+        finalJsonObject.insert("Osszesen", osszesen);
+        *queryMsg = QJsonDocument(finalJsonObject).toJson(QJsonDocument::Compact).toStdString().c_str();
+    }
+
+
+    return;
+
+}
+
+void DBServer::queryListRestaurantTag(QString *message, QString *QueryMessage)
+{
+
     cout << "[DBServer] Transaction started" << endl;
     query.clear();
 
@@ -1186,21 +1410,14 @@ void DBServer::queryListRestaurantTag(QString *message, QString *QueryMessage)
     QString strFromObj = QJsonDocument(finalJsonObject).toJson(QJsonDocument::Compact).toStdString().c_str();
     *QueryMessage=strFromObj;
 
-    db.commit();
     return;
 }
 
 void DBServer::queryListFoodTag(QString *message, QString *QueryMessage)
 {
-    if (!db.transaction()) {
-        *message = "[DBServer] Can't open transaction - stopped";
-        return;
-    }
+
     cout << "[DBServer] Transaction started" << endl;
     query.clear();
-
-    QString binds, fields;
-    QJsonArray jsonArray;
 
     //----Cimke tábla----
 
@@ -1212,11 +1429,12 @@ void DBServer::queryListFoodTag(QString *message, QString *QueryMessage)
     if (!ExecuteQuery(query, message))
         return;
 
+    QJsonArray jsonArray;
     while (query.next())
     {
         QJsonObject jsonObject;
 
-        jsonObject.insert("CimkeID", query.value(0).toDouble());
+        jsonObject.insert("CimkeID", query.value(0).toInt());
         jsonObject.insert("Nev", query.value(1).toString());
         jsonObject.insert("Tipus", query.value(4).toString());
 
@@ -1228,16 +1446,12 @@ void DBServer::queryListFoodTag(QString *message, QString *QueryMessage)
     QString strFromObj = QJsonDocument(finalJsonObject).toJson(QJsonDocument::Compact).toStdString().c_str();
     *QueryMessage=strFromObj;
 
-    db.commit();
     return;
 }
 
 void DBServer::queryListPaymentTag(const QVariantMap &data, QString *message, QString *QueryMessage)
 {
-    if (!db.transaction()) {
-        *message = "[DBServer] Can't open transaction - stopped";
-        return;
-    }
+
     cout << "[DBServer] Transaction started" << endl;
     query.clear();
 
@@ -1263,7 +1477,6 @@ void DBServer::queryListPaymentTag(const QVariantMap &data, QString *message, QS
     QString strFromObj = QJsonDocument(finalJsonObject).toJson(QJsonDocument::Compact).toStdString().c_str();
     *QueryMessage=strFromObj;
 
-    db.commit();
     return;
 }
 
@@ -1351,6 +1564,83 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
     *queryMsg = QJsonDocument(jsonArray).toJson(QJsonDocument::Compact).toStdString().c_str();
 
 }
+
+void DBServer::queryListWorkers(QString *message, QString *QueryMessage)
+{
+
+    cout << "[DBServer] Transaction started" << endl;
+    query.clear();
+
+
+    //----Cimke tábla----
+
+    QString str = "SELECT FutarID, Vnev || ' ' || Knev as Nev FROM Futar";
+    query.prepare(str);
+
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    QJsonArray jsonArray;
+    while (query.next())
+    {
+        QJsonObject jsonObject;
+
+        jsonObject.insert("FutarID", query.value(0).toInt());
+        jsonObject.insert("Nev", query.value(1).toString());
+
+        jsonArray.push_back(jsonObject);
+    }
+
+    *QueryMessage = QJsonDocument(jsonArray).toJson(QJsonDocument::Compact).toStdString().c_str();;
+
+    return;
+
+}
+
+void DBServer::queryListWorkerOrders(const QVariantMap &data, QString *message, QString *QueryMessage)
+{
+    cout << "[DBServer] Transaction started" << endl;
+    query.clear();
+
+
+    //----Cimke tábla----
+
+    QString str = "SELECT RendelesID, RendeloID, Prioritas, \
+            Irsz || ', ' || Kozterulet || ' ' || Hazszam || ', ' || Emelet_ajto  as Cim \
+            from Rendeles as re \
+            join Vendeg as ve on ve.VendegID = re.RendeloID \
+            join VendegCim as vec on vec.VendegID = ve.VendegID \
+            where FutarID = " + data.value("FutarID").toString()
+            + " order by Prioritas asc";
+
+    query.prepare(str);
+
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    QJsonArray jsonArray;
+    while (query.next())
+    {
+        QJsonObject jsonObject;
+
+        jsonObject.insert("RendelesID", query.value(0).toInt());
+        jsonObject.insert("RendeloID", query.value(1).toInt());
+        jsonObject.insert("Prioritas", query.value(2).toString());
+        jsonObject.insert("Cim", query.value(3).toString());
+
+        jsonArray.push_back(jsonObject);
+    }
+
+    *QueryMessage = QJsonDocument(jsonArray).toJson(QJsonDocument::Compact).toStdString().c_str();;
+    return;
+}
+
+
+
 
 
 void DBServer::queryUpdateFood(const QVariantMap &data, QString *message)

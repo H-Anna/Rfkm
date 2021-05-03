@@ -40,4 +40,14 @@ HTTPServer::HTTPServer(const QString& dbFilePath):
     Post(R"(/cimke/etel/torles/(\d+))", [&](const Request& request, Response& response){ manager.DeleteFoodTag(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
     Post(R"(/etterem/akcio/torles/(\d+))", [&](const Request& request, Response& response){ manager.DeleteDiscount(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
 
+
+
+    Post(R"(/etel/info)", [&](const Request& request, Response& response){ manager.GetSimpleFoodInfo(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Post(R"(/etterem/rendeles/modositas)", [&](const Request& request, Response& response){ manager.UpdateRestaurantOrder(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Get(R"(/futarok)", [&](const Request& request, Response& response){ manager.ListWorkers(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Get(R"(/futar/rendelesek/(\d+))", [&](const Request& request, Response& response){ manager.ListWorkerOrders(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Post(R"(/futar/prioritas)", [&](const Request& request, Response& response){ manager.UpdateOrderPriorityByWorker(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Post(R"(/futar/elutasit)", [&](const Request& request, Response& response){ manager.RejectWorkerOrder(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Post(R"(/futar/kesz)", [&](const Request& request, Response& response){ manager.CompleteWorkerOrder(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
+    Get(R"(/futar/reszesedes/(\d+))", [&](const Request& request, Response& response){ manager.ShowWorkerShare(request, response); response.set_header("Access-Control-Allow-Origin", "*"); });
 }
