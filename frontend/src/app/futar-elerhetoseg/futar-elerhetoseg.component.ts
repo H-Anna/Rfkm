@@ -111,6 +111,7 @@ export class FutarElerhetosegComponent implements OnInit {
 
   tablazatEmpty(){
     //táblázat tisztítása nem tudom hogy kell lol
+    this.form.reset();///???
   }
 
   submit(form: FormGroup) {
@@ -138,6 +139,5 @@ export class FutarElerhetosegComponent implements OnInit {
 
 
   }
-
 
 }

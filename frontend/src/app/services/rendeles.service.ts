@@ -46,5 +46,18 @@ export class RendelesService {
 
   }
 
+  //TODO
+  futarRendelesei(id){
+    return this.http.get<{
+      // "Allapot":number,
+      // "Etelek": {"EtelID": number, "Mennyi":number}[],
+      // "FutarID": number,
+      // "RendelesID": number,
+      // "SzallitasiMod": number,
+      // "VarakozasiIdo": number
+    }[]>(this.url+'/futar/rendelesek/'+id);
+
+  }
+
 
 }

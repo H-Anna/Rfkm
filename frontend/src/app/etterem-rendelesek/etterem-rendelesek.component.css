@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
 
 h1 {
-    padding: 70px;
+    padding: 50px;
     font-family: 'Poppins', sans-serif;
     letter-spacing: 2px;
     font-weight: bold;
@@ -18,8 +18,8 @@ h1 {
 }
 
 .card{
-    max-width: 600px;
-    margin: 70px;
+    max-width: 350px;
+    margin: 30px;
     background-color: #242424;
     
 }
@@ -73,6 +73,10 @@ table{
     width: 100%;
 }
 
-td{
+/* td{
     width: 50%;
+} */
+button{
+    background: rgb(165, 113, 113);
+    border: none;
 }

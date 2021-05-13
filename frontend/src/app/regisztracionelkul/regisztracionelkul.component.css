@@ -3,10 +3,9 @@
 
 
 
-
-
 .card{
-    max-width: 600px;
+    max-width: 800px;
+    padding: 50px;
     margin: 70px;
     background-color: black;
     font-family: 'Poppins', sans-serif;
@@ -14,9 +13,10 @@
 
 
 
+
 form {
     padding: 50px;
-    background-color:rgb(190, 189, 189);
+    background-color: #e5e1e1;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -40,7 +40,7 @@ label {
 
 .bg {
     /* The image used */
-    background-image: url('../../assets/restaurant.png');
+    background-image: url('../../assets/chef.jpg');
     background-attachment: fixed;
     background-size: cover;
     
@@ -56,22 +56,18 @@ label {
     background-repeat: no-repeat;
     background-size: cover;
 
-
     overflow-x: hidden;
     overflow-y: scroll;
 
   }
 
-#etelei {
+  #ettermek {
     font-family: 'Poppins', sans-serif;
-    background-color: black;
+    background-color: #651313;
     color: white;
-    padding: 5px;
-}
-
-mat-card-title {
-    background-color: white;
-    color: black;
+    padding-left: 50px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 img {

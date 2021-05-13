@@ -1,17 +1,22 @@
+import { Etterem } from './../ettermek/model/etterem';
 import { Kategoria } from './../etelek/model/kategoria';
 import { EtelService } from './../services/etel.service';
 import { FormControl, FormControlName, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EttermekListazasaService } from './../services/ettermek-listazasa.service';
 import { Component, OnInit } from '@angular/core';
-import { Etterem } from './model/etterem';
+
 
 @Component({
-  selector: 'app-ettermek',
-  templateUrl: './ettermek.component.html',
-  styleUrls: ['./ettermek.component.css']
+  selector: 'app-regisztracionelkul',
+  templateUrl: './regisztracionelkul.component.html',
+  styleUrls: ['./regisztracionelkul.component.css']
 })
-export class EttermekComponent implements OnInit {
+export class RegisztracionelkulComponent implements OnInit {
+
+  // constructor(){}
+
+  // ngOnInit(){}
 
   constructor(private service: EttermekListazasaService, private route: ActivatedRoute, private etelService: EtelService, private router: Router) { 
     etelService.getEtteremCimkek().subscribe(response => {
@@ -37,7 +42,8 @@ export class EttermekComponent implements OnInit {
       params => {
         //this.irszam = +params.get('irszam');
         console.log(params);
-        this.vendegId = +params.get('vendegId');
+        /////////////////???????????????
+        //this.vendegId = +params.get('vendegId');
       }
     );
   }
@@ -63,9 +69,9 @@ export class EttermekComponent implements OnInit {
   }
 
 
-  rendelInnen(id){
-    ///vendeg',vendegId,'ettermek',etteremId,'etelek'
-    this.router.navigate(['/vendeg', this.vendegId,'ettermek',id,'rendeles']);
-  }
+  // rendelInnen(id){
+  //   ///vendeg',vendegId,'ettermek',etteremId,'etelek'
+  //   this.router.navigate(['/vendeg', this.vendegId,'ettermek',id,'rendeles']);
+  // }
 
 }

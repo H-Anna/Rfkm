@@ -1,0 +1,45 @@
+<div class="bg" >
+
+    <form [formGroup]="form" (ngSubmit)=submit(form)>
+      <h2>Listázz éttermeket paraméterek alapján:</h2>
+      <label for="irszam">Irányítószám</label>
+      <input type="text" id="irszam" formControlName="irszam" class="form-control">
+  
+      <label for="nev">Név</label>
+      <input type="text" id="nev" formControlName="nev" class="form-control">
+  
+      <label for="etteremCimke">Címkék:</label><br>
+      <select multiple id="etteremCimke" formControlName="etteremCimke" class="form-control">
+        <option *ngFor="let item of etteremCimkek" [value]="item.CimkeID">{{item.Nev}}</option>
+      </select>
+      <br>
+      <button type="button" class="btn btn-primary" [disabled]="!form.valid" (click)="submit(form)">Listázás</button>
+  
+    </form>
+  
+    <h2 id="ettermek">Éttermek ezen a területen:</h2>
+    <mat-card *ngFor="let etterem of ettermek" class="card">
+      <mat-card-header>
+        <mat-card-title>{{etterem.Nev}}</mat-card-title>
+      </mat-card-header>
+  
+      <mat-card-content>
+        <p>Leírás: {{etterem.Leiras}}</p>
+      </mat-card-content>
+  
+      <mat-card-content>
+        <p>Szállítási költség: {{etterem.Szallitasi_ktsg}}</p>
+      </mat-card-content>
+  
+      <mat-card-content>
+        <img [src]="etterem.Kep" alt="" width="700px">
+      </mat-card-content>
+  
+      <mat-card-content>
+        <button class="btn btn-primary">Rendelés innen</button>
+        <!-- (click)="rendelInnen(etterem.EtteremID)""  -->
+      </mat-card-content>
+  
+    </mat-card>
+    <br> 
+  </div>

@@ -1,3 +1,4 @@
+
 import { ModositasService } from './services/modositas.service';
 
 import { EtelService } from './services/etel.service';
@@ -44,6 +45,9 @@ import { KosarComponent } from './kosar/kosar.component';
 import { EtteremBeallitasokComponent } from './etterem-beallitasok/etterem-beallitasok.component';
 import { FutarElerhetosegComponent } from './futar-elerhetoseg/futar-elerhetoseg.component';
 import { VendegRendelesekComponent } from './vendeg-rendelesek/vendeg-rendelesek.component';
+import { FutarRendelesekComponent } from './futar-rendelesek/futar-rendelesek.component';
+import { EtteremTeljesitettrendelesekComponent } from './etterem-teljesitettrendelesek/etterem-teljesitettrendelesek.component';
+import { RegisztracionelkulComponent } from './regisztracionelkul/regisztracionelkul.component';
 
 
 @NgModule({
@@ -64,7 +68,10 @@ import { VendegRendelesekComponent } from './vendeg-rendelesek/vendeg-rendelesek
     EtteremBeallitasokComponent,
     EtteremRendelesekComponent,
     FutarElerhetosegComponent,
-    VendegRendelesekComponent
+    VendegRendelesekComponent,
+    FutarRendelesekComponent,
+    EtteremTeljesitettrendelesekComponent,
+    RegisztracionelkulComponent
   ],
   imports: [
     CommonModule,
@@ -88,7 +95,8 @@ import { VendegRendelesekComponent } from './vendeg-rendelesek/vendeg-rendelesek
 
       //empty path represents the home page = default route
       { path: '', component: BejelentkezesComponent },
-      { path: 'etteremreg', component: EtteremRegisztralasaComponent },      
+      { path: 'etteremreg', component: EtteremRegisztralasaComponent },
+      { path: 'regisztracionelkul', component: RegisztracionelkulComponent},      
       { path: 'etterem/:etteremId', component: EtteremHomeComponent },
       { path: 'etterem/:etteremId/etelek', component: EtelekComponent, pathMatch: 'full' },
       { path: 'vendeg/:vendegId', component: VendegHomeComponent },
@@ -102,6 +110,8 @@ import { VendegRendelesekComponent } from './vendeg-rendelesek/vendeg-rendelesek
       { path: 'etterem/:etteremId/rendelesek', component: EtteremRendelesekComponent, pathMatch: 'full'},
       { path: 'futar/:futarId/modositas', component: FutarElerhetosegComponent, pathMatch: 'full' },
       { path: 'vendeg/:vendegId/rendelesek', component: VendegRendelesekComponent, pathMatch: 'full'},
+      { path: 'futar/:futarId/rendelesek', component: FutarRendelesekComponent, pathMatch: 'full'},
+      { path: 'etterem/:etteremId/teljesitettrendelesek', component: EtteremTeljesitettrendelesekComponent , pathMatch: 'full'},
       
 
      

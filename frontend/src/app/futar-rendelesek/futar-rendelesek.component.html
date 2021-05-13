@@ -1,0 +1,86 @@
+<app-futar-home></app-futar-home>
+
+<div class="bg">
+  
+    <br>
+  <table style="width:100%">
+    <tr>
+
+      <th><h2>Beérkezett rendelések</h2></th>
+      <th><h2>Aktív rendelések</h2></th>
+     
+    </tr>
+    <tr>
+        <td>
+            <mat-card *ngFor="let item of rendelesek" class="card">
+                
+                <mat-card-header>
+                  <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
+                </mat-card-header>
+            
+                <mat-card-content>
+                  <table class="table table-dark" style="padding: 0px;">
+                    <tbody>
+                      <tr>
+                        <td>Szállítási cím</td>
+                        <td>{{item.SzallitasiCim}}</td>
+                      </tr>
+                      <tr>
+                        <td>Leadás időpontja</td>
+                        <td>{{item.Leadasideje}}</td>
+                      </tr>
+                      <tr>
+                        <td>Prioritás</td>
+                        <td>{{item.Prioritas}}</td>
+                      </tr>
+            
+                    </tbody>
+                  </table>
+                </mat-card-content>
+            
+                <mat-card-content>
+                  <button type="button" class="btn btn-primary">Elfogadás</button>
+                  <button type="button" class="btn btn-primary">Elutasítás</button>
+                  //TODO 
+                  <!-- ide fv-ek -->
+                </mat-card-content>
+            
+              </mat-card>
+        </td>
+        <td>
+            <mat-card *ngFor="let item of rendelesek" class="card">
+
+                <mat-card-header>
+                  <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
+                </mat-card-header>
+            
+                <mat-card-content>
+                  <table class="table table-dark" style="padding: 0px;">
+                    <tbody>
+                      <tr>
+                        <td>Szállítási cím</td>
+                        <td>{{item.SzallitasiCim}}</td>
+                      </tr>
+                      <tr>
+                        <td>Leadás időpontja</td>
+                        <td>{{item.Leadasideje}}</td>
+                      </tr>
+                      <tr>
+                        <td>Prioritás</td>
+                        <td>{{item.Prioritas}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </mat-card-content>
+            
+                <mat-card-content>
+                  <button type="button" class="btn btn-primary">Kézbesítve</button>
+                </mat-card-content>
+            
+              </mat-card>
+        </td>
+    </tr>
+
+  </table>
+</div>
+

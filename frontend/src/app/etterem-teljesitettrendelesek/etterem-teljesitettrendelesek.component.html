@@ -1,0 +1,63 @@
+<app-etterem-home></app-etterem-home>
+
+<div class="bg">
+  <h1>Teljesitett rendelesek</h1>
+
+  <mat-card *ngFor="let item of rendelesek" class="card">
+    <mat-card-header>
+      <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <table class="table table-dark" style="padding: 0px;">
+        <tbody>
+          <tr>
+            <td>Állapot</td>
+            <td>{{item.Allapot}}</td>
+          </tr>
+          <tr>
+            <td>Szállítási mód</td>
+            <td>{{item.SzallitasiMod}}</td>
+          </tr>
+          <tr>
+            <td>Várakozási idő</td>
+            <td>{{item.VarakozasiIdo}}</td>
+          </tr>
+          <tr>
+            <td>Prioritás</td>
+            <td>{{item.Prioritas}}</td>
+          </tr>
+          <tr>
+            <td>Hozzárendelt futár</td>
+            <td>{{item.FutarID}}</td>
+          </tr>
+          <tr>
+            <td>Futár díja:</td>
+            <td>{{item.FutarDij}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card-content>
+
+    <mat-card-content>
+      <p style="margin-top: 10px;"> Ételek:</p>
+    </mat-card-content>
+
+    <mat-card-content id="etelek">
+      <table class="table table-dark">
+        <tbody>
+          <tr>
+            <td>Étel azonosító</td>
+            <td>Mennyiség</td>
+          </tr>
+          <tr *ngFor="let etel of item.Etelek">
+            <td>{{etel.EtelID}}</td>
+            <td>{{etel.Mennyi}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card-content>
+
+  </mat-card>
+
+</div>
