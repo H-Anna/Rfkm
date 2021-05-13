@@ -1102,7 +1102,7 @@ void DBServer::queryListRestaurantOrders(const QVariantMap &data, QString *messa
     //Ellenőrizzük hogy van-e rendelés a kapott ID-jű étteremhez
     int etteremID = data.value("EtteremID").toInt();
 
-    QString str = "SELECT re.RendelesID, RendeloID, FutarID, SzallitasiMod, VarakozasiIdo, Prioritas, FutarDij, Allapot, etel.EtelID, Mennyi \
+    QString str = "SELECT re.RendelesID, RendeloID, FutarID, SzallitasiMod, VarakozasiIdo, Prioritas, FutarDij, Allapot, etel.EtelID, etel.Nev, Mennyi \
         FROM Rendeles AS re \
         JOIN Kosar AS ko ON re.RendelesID = ko.RendelesID \
         JOIN Etel AS etel ON etel.EtelID = ko.EtelID \
@@ -1165,14 +1165,16 @@ void DBServer::queryListRestaurantOrders(const QVariantMap &data, QString *messa
 
             jsonEtelObject = QJsonObject();
             jsonEtelObject.insert("EtelID", query.value(8).toInt());
-            jsonEtelObject.insert("Mennyi", query.value(9).toInt());
+            jsonEtelObject.insert("Nev", query.value(9).toInt());
+            jsonEtelObject.insert("Mennyi", query.value(10).toInt());
 
             jsonEtelekArray.push_back(jsonEtelObject);
 
         } else {
             jsonEtelObject = QJsonObject();
             jsonEtelObject.insert("EtelID", query.value(8).toInt());
-            jsonEtelObject.insert("Mennyi", query.value(9).toInt());
+            jsonEtelObject.insert("Nev", query.value(9).toInt());
+            jsonEtelObject.insert("Mennyi", query.value(10).toInt());
 
             jsonEtelekArray.push_back(jsonEtelObject);
         }
@@ -1365,7 +1367,7 @@ void DBServer::queryShowWorkerShare(const QVariantMap &data, QString *message, Q
         return;
     } else {
         QJsonObject finalJsonObject;
-        finalJsonObject.insert("Rendelesek:", jsonArray);
+        finalJsonObject.insert("Rendelesek", jsonArray);
         finalJsonObject.insert("Osszesen", osszesen);
         *queryMsg = QJsonDocument(finalJsonObject).toJson(QJsonDocument::Compact).toStdString().c_str();
     }
@@ -1487,7 +1489,7 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
     //Ellenőrizzük hogy van-e rendelés a kapott ID-jű vendéghez
     int vendegID = data.value("VendegID").toInt();
 
-    QString str = "SELECT re.RendelesID, FutarID, SzallitasiMod, VarakozasiIdo, rea.Allapot, etel.EtelID, Mennyi \
+    QString str = "SELECT re.RendelesID, FutarID, SzallitasiMod, VarakozasiIdo, rea.Allapot, etel.EtelID, etel.Nev Mennyi \
         FROM Rendeles AS re \
         JOIN Kosar AS ko ON re.RendelesID = ko.RendelesID \
         LEFT JOIN Etel AS etel ON etel.EtelID = ko.EtelID \
@@ -1546,14 +1548,16 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
 
             jsonEtelObject = QJsonObject();
             jsonEtelObject.insert("EtelID", query.value(5).toInt());
-            jsonEtelObject.insert("Mennyi", query.value(6).toInt());
+            jsonEtelObject.insert("Nev", query.value(6).toInt());
+            jsonEtelObject.insert("Mennyi", query.value(7).toInt());
 
             jsonEtelekArray.push_back(jsonEtelObject);
 
         } else {
             jsonEtelObject = QJsonObject();
             jsonEtelObject.insert("EtelID", query.value(5).toInt());
-            jsonEtelObject.insert("Mennyi", query.value(6).toInt());
+            jsonEtelObject.insert("Nev", query.value(6).toInt());
+            jsonEtelObject.insert("Mennyi", query.value(7).toInt());
 
             jsonEtelekArray.push_back(jsonEtelObject);
         }

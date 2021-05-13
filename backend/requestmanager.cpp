@@ -789,7 +789,7 @@ void RequestManager::UpdateRestaurantOrder(const Request &request, Response &res
 
     QVariantMap data = jsonObject.toVariantMap();
     QString msg("OK");
-    database.queryPlaceUserOrder(data, &msg);
+    database.queryUpdateRestaurantOrders(data, &msg);
 
     int status = 200;
 
