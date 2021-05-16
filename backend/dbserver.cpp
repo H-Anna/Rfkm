@@ -555,9 +555,8 @@ void DBServer::queryGetSimpleFoodInfo(const QVariantMap &data, QString *message,
 
     //----Etel tábla----
 
-    QString str = "SELECT * FROM Etel WHERE EtteremID =:EtteremID AND EtelID =:EtelID";
+    QString str = "SELECT * FROM Etel WHERE EtelID =:EtelID";
     query.prepare(str);
-    query.bindValue(QString(":EtteremID"), data.value("EtteremID"));
     query.bindValue(QString(":EtelID"), data.value("EtelID"));
 
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
@@ -579,7 +578,7 @@ void DBServer::queryGetSimpleFoodInfo(const QVariantMap &data, QString *message,
     }
 
     if (!hasRecord) {
-        *message = "[DBServer] Food or Restaurant with ID doesn't exist";
+        *message = "[DBServer] Food with ID doesn't exist";
         return;
     }
 
@@ -800,7 +799,7 @@ void DBServer::queryPlaceUserOrder(const QVariantMap &data, QString *message)
     if (!ExecuteQuery(query, message, true))
         return;
 
-    str = "INSERT INTO RendelesAllapot (RendelesID, Allapot) VALUES ("+ QString::number(rendelesID) +", 'Feldolgozas alatt')";
+    str = "INSERT INTO RendelesAllapot (RendelesID, Allapot) VALUES ("+ QString::number(rendelesID) +", 'Fogadva')";
     query.prepare(str);
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
 
@@ -1156,11 +1155,11 @@ void DBServer::queryListRestaurantOrders(const QVariantMap &data, QString *messa
             jsonRendeles.insert("RendelesID", query.value(0).toInt());
             jsonRendeles.insert("RendeloID", query.value(1).toInt());
             jsonRendeles.insert("FutarID", query.value(2).toInt());
-            jsonRendeles.insert("SzallitasiMod", query.value(3).toInt());
+            jsonRendeles.insert("SzallitasiMod", query.value(3).toString());
             jsonRendeles.insert("VarakozasiIdo", query.value(4).toDouble());
             jsonRendeles.insert("Prioritas", query.value(5).toDouble());
             jsonRendeles.insert("FutarDij", query.value(6).toDouble());
-            jsonRendeles.insert("Allapot", query.value(7).toDouble());
+            jsonRendeles.insert("Allapot", query.value(7).toString());
 
 
             jsonEtelObject = QJsonObject();
@@ -1221,7 +1220,7 @@ void DBServer::queryUpdateRestaurantOrders(const QVariantMap &data, QString *mes
             rendelesUpdate.append("VarakozasiIdo = " + QString::number(data.value("VarakozasiIdo").toInt()));
         }
 
-        QString str = "UPDATE Rendeles SET"+ rendelesUpdate +" WHERE RendelesID = :RendelesID";
+        QString str = "UPDATE Rendeles SET "+ rendelesUpdate +" WHERE RendelesID = :RendelesID";
         query.prepare(str);
         query.bindValue(":RendelesID", rendelesID);
         cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
@@ -1238,7 +1237,7 @@ void DBServer::queryUpdateRestaurantOrders(const QVariantMap &data, QString *mes
         QString rendelesUpdate = "";
         rendelesUpdate.append("Allapot = '"+ data.value("Allapot").toString() +"'");
 
-        QString str = "UPDATE RendelesAllapot SET"+ rendelesUpdate +" WHERE RendelesID = :RendelesID";
+        QString str = "UPDATE RendelesAllapot SET "+ rendelesUpdate +" WHERE RendelesID = :RendelesID";
         query.prepare(str);
         query.bindValue(":RendelesID", rendelesID);
         cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
@@ -1301,6 +1300,17 @@ void DBServer::queryRejectWorkerOrder(const QVariantMap &data, QString *message)
     if (!ExecuteQuery(query, message))
         return;
 
+    //----RendelesAllapot tábla----
+
+    str = "UPDATE RendelesAllapot SET Allapot = 'Kiszállításra vár' \
+            WHERE RendelesID = :RendelesID";
+    query.prepare(str);
+    BindValues(query, data);
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
     //Végül az elindított tranzakciót befejezzük
     db.commit();
     return;
@@ -1317,7 +1327,7 @@ void DBServer::queryCompleteWorkerOrder(const QVariantMap &data, QString *messag
 
     query.clear();
 
-    //----Rendeles tábla----
+    //----RendelesAllapot tábla----
 
     QString str = "UPDATE RendelesAllapot SET Allapot = 'Befejezett' \
             WHERE RendelesID = :RendelesID";
@@ -1374,7 +1384,6 @@ void DBServer::queryShowWorkerShare(const QVariantMap &data, QString *message, Q
 
 
     return;
-
 }
 
 void DBServer::queryListRestaurantTag(QString *message, QString *QueryMessage)
@@ -1541,9 +1550,9 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
 
             jsonRendeles.insert("RendelesID", query.value(0).toInt());
             jsonRendeles.insert("FutarID", query.value(1).toInt());
-            jsonRendeles.insert("SzallitasiMod", query.value(2).toInt());
+            jsonRendeles.insert("SzallitasiMod", query.value(2).toString());
             jsonRendeles.insert("VarakozasiIdo", query.value(3).toDouble());
-            jsonRendeles.insert("Allapot", query.value(4).toDouble());
+            jsonRendeles.insert("Allapot", query.value(4).toString());
 
 
             jsonEtelObject = QJsonObject();
@@ -1569,16 +1578,15 @@ void DBServer::queryListUserOrders(const QVariantMap &data, QString *message, QS
 
 }
 
-void DBServer::queryListWorkers(QString *message, QString *QueryMessage)
+void DBServer::queryListDiscounts(QString *message, QString *QueryMessage)
 {
 
     cout << "[DBServer] Transaction started" << endl;
     query.clear();
 
+    //----Akcio tábla----
 
-    //----Cimke tábla----
-
-    QString str = "SELECT FutarID, Vnev || ' ' || Knev as Nev FROM Futar";
+    QString str = "SELECT * FROM Akcio";
     query.prepare(str);
 
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
@@ -1591,8 +1599,76 @@ void DBServer::queryListWorkers(QString *message, QString *QueryMessage)
     {
         QJsonObject jsonObject;
 
+        jsonObject.insert("Nev", query.value(0).toString());
+        jsonObject.insert("Ertek", query.value(1).toInt());
+        jsonObject.insert("AkcioID", query.value(2).toInt());
+
+        jsonArray.push_back(jsonObject);
+    }
+
+    QJsonObject finalJsonObject;
+    finalJsonObject.insert("Akciok", jsonArray);
+    QString strFromObj = QJsonDocument(finalJsonObject).toJson(QJsonDocument::Compact).toStdString().c_str();
+    *QueryMessage=strFromObj;
+
+    return;
+}
+
+void DBServer:: queryListWorkers(const QVariantMap &data, QString *message, QString *QueryMessage)
+{
+
+    cout << "[DBServer] Transaction started" << endl;
+    query.clear();
+
+    //----Rendeles tábla----
+    QString str="SELECT Irsz \
+                FROM Rendeles AS r \
+                JOIN Vendeg AS v ON r.RendeloID=v.VendegID \
+                JOIN VendegCim AS vc ON v.VendegID=vc.VendegID \
+                WHERE RendelesID=:RendelesID";
+    query.prepare(str);
+    query.bindValue(":RendelesID", data.value("RendelesID"));
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    int Irsz=0;
+    if (query.next())
+    {
+        Irsz=query.value(0).toInt();
+    }
+
+    //----Cimke tábla----
+
+    QDate date = QDate::currentDate();
+    int day = date.dayOfWeek(); //1-7
+    QDateTime timestamp = QDateTime::currentDateTime();
+    int hour = timestamp.time().hour();
+
+    str = "SELECT f.FutarID, Vnev, Knev FROM Futar AS f \
+            JOIN FutarSzallit AS fsz ON f.FutarID=fsz.FutarID \
+            JOIN FutarOnlineIdoszakai AS foi ON f.FutarID=foi.FutarID \
+            WHERE TeruletID=:TeruletID AND \
+            Nap=:Nap AND \
+            Kezdes <= :Ora AND Befejezes > :Ora";
+    query.prepare(str);
+    query.bindValue(":TeruletID", Irsz);
+    query.bindValue(":Nap", day-1);
+    query.bindValue(":Ora", hour);
+
+    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
+
+    if (!ExecuteQuery(query, message))
+        return;
+
+    QJsonArray jsonArray;
+    while (query.next())
+    {
+        QJsonObject jsonObject;
+
         jsonObject.insert("FutarID", query.value(0).toInt());
-        jsonObject.insert("Nev", query.value(1).toString());
+        jsonObject.insert("Vnev", query.value(1).toString());
+        jsonObject.insert("Knev", query.value(2).toString());
 
         jsonArray.push_back(jsonObject);
     }
@@ -1600,7 +1676,6 @@ void DBServer::queryListWorkers(QString *message, QString *QueryMessage)
     *QueryMessage = QJsonDocument(jsonArray).toJson(QJsonDocument::Compact).toStdString().c_str();;
 
     return;
-
 }
 
 void DBServer::queryListWorkerOrders(const QVariantMap &data, QString *message, QString *QueryMessage)
@@ -1611,11 +1686,12 @@ void DBServer::queryListWorkerOrders(const QVariantMap &data, QString *message, 
 
     //----Cimke tábla----
 
-    QString str = "SELECT RendelesID, RendeloID, Prioritas, \
-            Irsz || ', ' || Kozterulet || ' ' || Hazszam || ', ' || Emelet_ajto  as Cim \
+    QString str = "SELECT re.RendelesID, RendeloID, Prioritas, Allapot, TimeStamp, \
+            Irsz, Kozterulet, Hazszam, Emelet_ajto \
             from Rendeles as re \
             join Vendeg as ve on ve.VendegID = re.RendeloID \
             join VendegCim as vec on vec.VendegID = ve.VendegID \
+            join RendelesAllapot as ra on re.RendelesID=ra.RendelesID \
             where FutarID = " + data.value("FutarID").toString()
             + " order by Prioritas asc";
 
@@ -1633,8 +1709,15 @@ void DBServer::queryListWorkerOrders(const QVariantMap &data, QString *message, 
 
         jsonObject.insert("RendelesID", query.value(0).toInt());
         jsonObject.insert("RendeloID", query.value(1).toInt());
-        jsonObject.insert("Prioritas", query.value(2).toString());
-        jsonObject.insert("Cim", query.value(3).toString());
+        jsonObject.insert("Prioritas", query.value(2).toInt());
+        jsonObject.insert("Allapot", query.value(3).toString());
+        jsonObject.insert("TimeStamp", query.value(4).toString());
+        QJsonObject cimObject;
+        cimObject.insert("Irsz", query.value(5).toInt());
+        cimObject.insert("Kozterulet", query.value(6).toString());
+        cimObject.insert("Hazszam", query.value(7).toInt());
+        cimObject.insert("Emelet_ajto", query.value(8).toString());
+        jsonObject.insert("Cim", cimObject);
 
         jsonArray.push_back(jsonObject);
     }

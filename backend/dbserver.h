@@ -31,6 +31,7 @@ public:
     void queryListFoodTag(QString *message, QString *QueryMessage);
     void queryListPaymentTag(const QVariantMap &data,QString *message, QString *QueryMessage);
     void queryListUserOrders(const QVariantMap &data, QString *message, QString* queryMsg);
+    void queryListDiscounts(QString *message, QString *QueryMessage);
 
     void queryUpdateFood(const QVariantMap &data, QString *message);
     void queryUpdateRestaurantBasics(const QVariantMap &data, QString *message);
@@ -49,7 +50,7 @@ public:
 
 
 
-    void queryListWorkers(QString *message, QString *QueryMessage);
+    void queryListWorkers(const QVariantMap &data, QString *message, QString *QueryMessage);
     void queryListWorkerOrders(const QVariantMap &data, QString *message, QString *QueryMessage);
     void queryGetSimpleFoodInfo(const QVariantMap &data, QString *message, QString *QueryMessage);
     void queryUpdateRestaurantOrders(const QVariantMap &data, QString *message);

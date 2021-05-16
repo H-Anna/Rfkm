@@ -341,31 +341,14 @@ void RequestManager::GetSimpleFoodInfo(const Request &request, Response &respons
     cout << "[RequestManager] Log : Getting Food Info..." << endl;
     cout << "[RequestManager] Log : Checking for errors..." << endl;
 
-    //Hibakezelés
-
-    //Nem kaptunk adatot?
-    if (request.body.empty()) {
-        JSONMessage(response, 400, "[RequestManager] Error : Empty request headers");
-        return;
-    }
-
-    //Nem megfelelő formátum?
-    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
-    {
-        QStringList requiredKeys = { "EtteremID", "EtelID" };
-        if (!JSONHasAllKeys(jsonObject, requiredKeys)) {
-            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
-            return;
-        }
-    }
-
-    //Hibakezelés vége
 
     cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
 
-    QVariantMap data = jsonObject.toVariantMap();
-    QString msg("OK");
-    QString queryMsg("");
+    QVariantMap data;
+    QString id = QString::fromStdString(request.matches[1]);
+    data.insert("EtelID", id);
+
+    QString msg("OK"), queryMsg;
     database.queryGetSimpleFoodInfo(data, &msg, &queryMsg);
 
     int status = 200;
@@ -698,11 +681,35 @@ void RequestManager::ListRestaurant(const Request &request, Response &response)
 void RequestManager::ListWorkers(const Request &request, Response &response)
 {
     cout << "[RequestManager] Log : Starting Worker Listing..." << endl;
+    cout << "[RequestManager] Log : Checking for errors..." << endl;
+
+    //Hibakezelés
+
+    //Nem kaptunk adatot?
+    if (request.body.empty()) {
+        JSONMessage(response, 400, "[RequestManager] Error : Empty request body");
+        return;
+    }
+
+    //Nem megfelelő formátum?
+    //1. Fő objektum
+    QJsonObject jsonObject = QJsonDocument::fromJson(QString::fromStdString(request.body).toUtf8()).object();
+    {
+        QStringList requiredKeys = { "RendelesID"};
+        if (!JSONHasAllKeys(jsonObject, requiredKeys)) {
+            JSONMessage(response, 400, "[RequestManager] Error : Bad JSON - Incorrect keys in main JSON object");
+            return;
+        }
+    }
+
+    //Hibakezelés vége
     cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
 
+
+    QVariantMap data = jsonObject.toVariantMap();
     QString msg("OK");
     QString queryMsg("");
-    database.queryListWorkers(&msg, &queryMsg);
+    database.queryListWorkers(data, &msg, &queryMsg);
 
     int status = 200;
 
@@ -908,6 +915,33 @@ void RequestManager::ListUserOrders(const Request &request, Response &response)
         status = 500;
         JSONMessage(response, status, msg);
     } else {
+        response.set_content(queryMsg.toStdString(), "application/json");
+        response.status = status;
+    }
+
+    cout << "[RequestManager] Log : Response sent." << endl;
+    return;
+}
+
+void RequestManager::ListDiscounts(const Request &request, Response &response)
+{
+    cout << "[RequestManager] Log : Starting Food Tag Listing..." << endl;
+    cout << "[RequestManager] Log : Forwarding data to DBServer..." << endl;
+
+    //Ha minden oké, továbbadjuk az adatbázisnak az adatokat
+    QString msg("OK");
+    QString queryMsg("");
+    database.queryListDiscounts(&msg, &queryMsg);
+
+    int status = 200;
+
+    //Ellenőrizzük a query eredményét
+    if (msg != "OK") {
+        cout << "[RequestManager] Error occured during DB method" << endl;
+        status = 500;
+        JSONMessage(response, status, msg);
+    }
+    else{
         response.set_content(queryMsg.toStdString(), "application/json");
         response.status = status;
     }

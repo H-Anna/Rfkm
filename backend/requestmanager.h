@@ -31,6 +31,7 @@ public:
     void ListFoodTag(const Request &request, Response &response);
     void ListPaymentTag(const Request &request, Response &response);
     void ListUserOrders(const Request& request, Response& response);
+    void ListDiscounts(const Request& request, Response& response);
 
     void UpdateFood(const Request &request, Response &response);
     void UpdateRestaurantBasics(const Request &request, Response &response);
