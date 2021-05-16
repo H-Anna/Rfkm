@@ -41,6 +41,7 @@ export class EtelekRendelesComponent implements OnInit {
 
     //this.rendeles   //ez mi? ez itt csak így volt
     this.service.getEtelek(this.etteremId).subscribe( response => {
+      console.log(response);
       this.etelek = response.Etelek;
     })
   }

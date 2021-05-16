@@ -12,7 +12,7 @@
     </tr>
     <tr>
         <td>
-            <mat-card *ngFor="let item of rendelesek" class="card">
+            <mat-card *ngFor="let item of beerkezettRendelesek" class="card">
                 
                 <mat-card-header>
                   <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
@@ -23,15 +23,15 @@
                     <tbody>
                       <tr>
                         <td>Szállítási cím</td>
-                        <td>{{item.SzallitasiCim}}</td>
+                        <td>{{item.Cim}}</td>
                       </tr>
                       <tr>
                         <td>Leadás időpontja</td>
-                        <td>{{item.Leadasideje}}</td>
+                        <td>{{item.Prioritas}}</td>
                       </tr>
                       <tr>
                         <td>Prioritás</td>
-                        <td>{{item.Prioritas}}</td>
+                        <td>{{item.RendeloID}}</td>
                       </tr>
             
                     </tbody>
@@ -39,8 +39,8 @@
                 </mat-card-content>
             
                 <mat-card-content>
-                  <button type="button" class="btn btn-primary">Elfogadás</button>
-                  <button type="button" class="btn btn-primary">Elutasítás</button>
+                  <button type="button" class="btn btn-primary" (click)="rendelesElfogadasa()">Elfogadás</button>
+                  <button type="button" class="btn btn-primary" (click)="rendelesElutasitasa()">Elutasítás</button>
                   //TODO 
                   <!-- ide fv-ek -->
                 </mat-card-content>
@@ -48,7 +48,7 @@
               </mat-card>
         </td>
         <td>
-            <mat-card *ngFor="let item of rendelesek" class="card">
+            <mat-card *ngFor="let item of aktivRendelesek" class="card">
 
                 <mat-card-header>
                   <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
@@ -59,11 +59,11 @@
                     <tbody>
                       <tr>
                         <td>Szállítási cím</td>
-                        <td>{{item.SzallitasiCim}}</td>
+                        <td>{{item.Cim}}</td>
                       </tr>
                       <tr>
                         <td>Leadás időpontja</td>
-                        <td>{{item.Leadasideje}}</td>
+                        <td>ez nem jön át</td>
                       </tr>
                       <tr>
                         <td>Prioritás</td>

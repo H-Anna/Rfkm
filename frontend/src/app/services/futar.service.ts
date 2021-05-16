@@ -13,4 +13,9 @@ export class FutarService {
   reszesedesModositasa(reszesedes){
     return this.http.post<{Message: string}>(this.url+'/etterem/futarreszesedes/modositas',JSON.stringify(reszesedes));
   }
+
+  futarokListazasa(){
+    return this.http.get<{"Nev": string, "FutarID": number}[]>(this.url+'/futarok');
+  }
+
 }

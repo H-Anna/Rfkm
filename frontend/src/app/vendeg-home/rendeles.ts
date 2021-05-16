@@ -2,43 +2,60 @@ export class Rendeles {
     VendegId: number;
     FizetesiMod: string;
     SzallitasiMod: string;
-    EtelIdk: number[] = [];
-    Etelek: {EtelID: number,EtelNev: string, Mennyi: number}[] = [];
+    EtelIdk: number[] = []; //Étel id-k
+    Etelek: { EtelID: number, EtelNev: string, Mennyi: number }[] = [];
     OsszesenFt: number = 0;
-    constructor(vendegId: number){
+    constructor(vendegId: number) {
         this.VendegId = vendegId;
     }
-    addEtel(etelId,etelNev,etelAr){
-        if(this.vanIlyen(etelId)){
+    addEtel(etelId, etelNev, etelAr, etelAkcio) {
+        console.log(etelAkcio);
+        if (this.vanIlyen(etelId)) {
             //adott id-jú étel mennyiségének növelése eggyel
             this.Etelek.forEach(item => {
-                if(item.EtelID==etelId){
+                if (item.EtelID == etelId) {
                     item.Mennyi++;
                 }
             });
-            this.OsszesenFt += etelAr;
+            if (etelAkcio == null) {
+                this.OsszesenFt += etelAr;
+            }
+            else if (etelAkcio != null) {
+                this.OsszesenFt += etelAr * (1 - (etelAkcio * 0.01));
+            }
+
         }
-        else{
-            this.Etelek.push({"EtelID":etelId,"EtelNev":etelNev,"Mennyi": 1});
+        else {
+            this.Etelek.push({ "EtelID": etelId, "EtelNev": etelNev, "Mennyi": 1 });
             this.EtelIdk.push(etelId);
-            this.OsszesenFt += etelAr;
-        }        
+            if (etelAkcio == null) {
+                this.OsszesenFt += etelAr;
+            }
+            else if (etelAkcio != null) {
+                this.OsszesenFt += etelAr * (1 - (etelAkcio * 0.01));
+            }
+        }
     }
-    subtractEtel(etelId, etelAr){
+    subtractEtel(etelId, etelAr, etelAkcio) {
         //adott id-jú étel mennyiségének csökkentése eggyel
-        if(this.vanIlyen(etelId)){
+        if (this.vanIlyen(etelId)) {
             this.Etelek.forEach(item => {
-                if(item.EtelID==etelId){
+                if (item.EtelID == etelId) {
                     item.Mennyi--;
-                    this.OsszesenFt -= etelAr;
+                    if (etelAkcio == null) {
+                        this.OsszesenFt -= etelAr;
+                    }
+                    else if (etelAkcio != null) {
+                        this.OsszesenFt -= etelAr * (1 - (etelAkcio * 0.01));
+                    }
                     console.log(item);
-                    if(item.Mennyi==0){
+                    if (item.Mennyi == 0) {
                         let idx = this.EtelIdk.indexOf(etelId);
-                        this.EtelIdk.splice(idx,1);
+                        this.EtelIdk.splice(idx, 1);
                         this.Etelek.forEach(etel => {
-                            if(etel.EtelID == etelId){
-                                let idx2 = this.Etelek.indexOf({"EtelID":etelId,"EtelNev":etel.EtelNev,"Mennyi":etel.Mennyi});
-                                this.Etelek.splice(idx2,1);
+                            if (etel.EtelID == etelId) {
+                                let idx2 = this.Etelek.indexOf({ "EtelID": etelId, "EtelNev": etel.EtelNev, "Mennyi": etel.Mennyi });
+                                this.Etelek.splice(idx2, 1);
                             }
                         });
                     }
@@ -47,21 +64,21 @@ export class Rendeles {
         }
     }
 
-    getEtelById(id:number){
+    getEtelById(id: number) {
         let idx = this.EtelIdk.indexOf(id);
-        if(idx > -1){
+        if (idx > -1) {
             let etelToReturn: any;
             this.Etelek.forEach(etel => {
-                if(etel.EtelID==id){
-                    etelToReturn = {"EtelId":etel.EtelID,"Mennyi":etel.Mennyi};
+                if (etel.EtelID == id) {
+                    etelToReturn = { "EtelId": etel.EtelID, "Mennyi": etel.Mennyi };
                 }
             });
             return etelToReturn;
         }
         return 0;
     }
-    vanIlyen(id: number){
-        if(this.EtelIdk.indexOf(id) > -1){
+    vanIlyen(id: number) {
+        if (this.EtelIdk.indexOf(id) > -1) {
             return true;
         }
         return false;

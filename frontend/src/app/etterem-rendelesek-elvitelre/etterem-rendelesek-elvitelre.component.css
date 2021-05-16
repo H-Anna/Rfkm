@@ -2,31 +2,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
 
 h1 {
-    padding: 70px;
-    color: #503724;
+    padding: 50px;
     font-family: 'Poppins', sans-serif;
-    font-weight: bold;
     letter-spacing: 2px;
+    font-weight: bold;
 }
 
 .bg {
-    background: rgb(255,164,92);
-    background: linear-gradient(0deg, rgba(255,164,92,1) 0%, rgba(255,183,129,1) 19%, rgba(255,205,171,1) 42%, rgba(255,226,200,1) 62%, rgba(255,233,210,1) 80%, rgba(255,244,227,1) 100%);
+    background: rgb(255,255,255);
+    background: linear-gradient(20deg, rgba(255,255,255,1) 0%, rgb(234, 179, 102) 100%);
 }
 
 .table-dark{
     background-color: rgb(20, 20, 20);
 }
 
+.card{
+    width: 350px;
+    margin: 30px;
+    background-color: #242424;
+    
+}
+
 td {
+    width: 33%;
     vertical-align: top;
 }
 
-.card{
-    max-width: 600px;
-    margin: 70px;
-    background-color: #303030;
-    
+input{
+    max-width: 80px;
+}
+
+select{
+    width: 80px;
 }
 
 
@@ -54,19 +62,12 @@ label {
     color: white;
 }
 
-table{
-    width: 100%;
-}
-
-td{
-    width: 50%;
-}
-
 
 
 mat-card-header, mat-card-content{
+    padding: 5px;
     font-family: 'Poppins', sans-serif;
-    font-size: large;
+    font-size: medium;
 }
 
 mat-card-title {
@@ -79,4 +80,14 @@ img {
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+table{
+    width: 100%;
+}
+
+
+button{
+    background: rgb(165, 113, 113);
+    border: none;
 }

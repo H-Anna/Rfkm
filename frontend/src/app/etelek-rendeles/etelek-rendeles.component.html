@@ -10,13 +10,17 @@
                 <mat-card-header>
                     <mat-card-title>{{item.Nev}}</mat-card-title>
                 </mat-card-header>
-
                 <mat-card-content>
                     <p>Leírás: {{item.Leiras}}</p>
                 </mat-card-content>
 
-                <mat-card-content>
-                    <p>{{item.Ar}} Ft</p>
+                <mat-card-content *ngIf="item.Akcio.Ertek==null">
+                    <p>{{item.Ar}} Ft</p>                    
+                </mat-card-content>
+
+                <mat-card-content *ngIf="item.Akcio.Ertek!=null"  style="background-color: brown;">
+                    <p style="text-decoration-line: line-through;">{{item.Ar}} Ft</p>
+                    <p>Akciós ár: {{item.Ar*(1-(0.01*(item.Akcio.Ertek)))}} Ft</p>
                 </mat-card-content>
 
                 <mat-card-content>
@@ -25,11 +29,11 @@
 
                 <mat-card-content>
                     <button class="btn btn-primary"
-                        (click)="this.rendeles.addEtel(item.EtelID,item.Nev,item.Ar,1)">+</button>
+                        (click)="this.rendeles.addEtel(item.EtelID,item.Nev,item.Ar,item.Akcio.Ertek)">+</button>
                 </mat-card-content>
 
-                <mat-card-content>
-                    <button class="btn btn-primary" (click)="this.rendeles.subtractEtel(item.EtelID, item.Ar)">-</button>
+                <mat-card-content *ngIf="rendeles.vanIlyen(item.EtelID)">
+                    <button class="btn btn-primary" (click)="this.rendeles.subtractEtel(item.EtelID, item.Ar, item.Akcio.Ertek)">-</button>
                 </mat-card-content>
 
                 <mat-card-content *ngIf="rendeles.vanIlyen(item.EtelID)">
@@ -37,7 +41,8 @@
                 </mat-card-content>
 
                 <mat-card-content *ngIf="rendeles.vanIlyen(item.EtelID)">
-                    <p>{{this.rendeles.getEtelById(item.EtelID).Mennyi * item.Ar}} Ft</p>
+                    <p *ngIf="item.Akcio.Ertek==null">{{this.rendeles.getEtelById(item.EtelID).Mennyi * item.Ar}} Ft</p>
+                    <p *ngIf="item.Akcio.Ertek!=null">{{this.rendeles.getEtelById(item.EtelID).Mennyi * item.Ar*(1-(0.01*(item.Akcio.Ertek)))}} Ft</p>
                 </mat-card-content>
 
             </mat-card>

@@ -1,3 +1,4 @@
+import { EtteremRendelesekElvitelreComponent } from './etterem-rendelesek-elvitelre/etterem-rendelesek-elvitelre.component';
 
 import { ModositasService } from './services/modositas.service';
 
@@ -41,7 +42,6 @@ import { SafePipe } from './safe.pipe';
 import { FutarRegisztralasComponent } from './futar-regisztralas/futar-regisztralas.component';
 import { FutarHomeComponent } from './futar-home/futar-home.component';
 import { EtelekRendelesComponent } from './etelek-rendeles/etelek-rendeles.component';
-import { KosarComponent } from './kosar/kosar.component';
 import { EtteremBeallitasokComponent } from './etterem-beallitasok/etterem-beallitasok.component';
 import { FutarElerhetosegComponent } from './futar-elerhetoseg/futar-elerhetoseg.component';
 import { VendegRendelesekComponent } from './vendeg-rendelesek/vendeg-rendelesek.component';
@@ -64,14 +64,14 @@ import { RegisztracionelkulComponent } from './regisztracionelkul/regisztracione
     FutarRegisztralasComponent,
     FutarHomeComponent,
     EtelekRendelesComponent,
-    KosarComponent,
     EtteremBeallitasokComponent,
     EtteremRendelesekComponent,
     FutarElerhetosegComponent,
     VendegRendelesekComponent,
     FutarRendelesekComponent,
     EtteremTeljesitettrendelesekComponent,
-    RegisztracionelkulComponent
+    RegisztracionelkulComponent,
+    EtteremRendelesekElvitelreComponent
   ],
   imports: [
     CommonModule,
@@ -105,13 +105,13 @@ import { RegisztracionelkulComponent } from './regisztracionelkul/regisztracione
       { path: 'futarreg', component: FutarRegisztralasComponent },
       { path: 'futar/:futarId', component: FutarHomeComponent },
       { path: 'vendeg/:vendegId/ettermek/:etteremId/rendeles', component: EtelekRendelesComponent, pathMatch: 'full'},
-      { path: 'vendeg/:vendegId/kosar', component: KosarComponent, pathMatch: 'full'},    //ez kell??
       { path: 'etterem/:etteremId/beallitasok', component: EtteremBeallitasokComponent, pathMatch: 'full'},
       { path: 'etterem/:etteremId/rendelesek', component: EtteremRendelesekComponent, pathMatch: 'full'},
       { path: 'futar/:futarId/modositas', component: FutarElerhetosegComponent, pathMatch: 'full' },
       { path: 'vendeg/:vendegId/rendelesek', component: VendegRendelesekComponent, pathMatch: 'full'},
       { path: 'futar/:futarId/rendelesek', component: FutarRendelesekComponent, pathMatch: 'full'},
-      { path: 'etterem/:etteremId/teljesitettrendelesek', component: EtteremTeljesitettrendelesekComponent , pathMatch: 'full'},
+      { path: 'etterem/:etteremId/teljesitettrendelesek', component: EtteremTeljesitettrendelesekComponent , pathMatch: 'full'},      
+      { path: 'etterem/:etteremId/rendelesekelvitelre', component: EtteremRendelesekElvitelreComponent , pathMatch: 'full'},
       
 
      

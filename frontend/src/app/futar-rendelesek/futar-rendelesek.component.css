@@ -20,8 +20,11 @@ h1 {
 .card{
     max-width: 600px;
     margin: 70px;
-    background-color: #242424;
-    
+    background-color: #242424;    
+}
+
+td{
+    width: 50%;
 }
 
 

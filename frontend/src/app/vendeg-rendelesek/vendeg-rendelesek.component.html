@@ -1,52 +1,112 @@
 <app-vendeg-home></app-vendeg-home>
 <div class="bg">
-    <h1>Leadott rendelések</h1>
-    <mat-card *ngFor="let item of rendelesek" class="card">
-        <mat-card-header>
-            <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
-        </mat-card-header>
-
-        <mat-card-content>
-            <table class="table table-dark" style="padding: 0px;">
-                <tbody>
-                    <tr>
-                        <td>Állapot</td>
-                        <td>{{item.Allapot}}</td>
-                    </tr>
-                    <tr>
-                        <td>Szállítási mód</td>
-                        <td>{{item.SzallitasiMod}}</td>
-                    </tr>
-                    <tr>
-                        <td>Várakozási idő</td>
-                        <td>{{item.VarakozasiIdo}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </mat-card-content>
-        
-        <mat-card-content>
-            <p style="margin-top: 10px;"> Ételek:</p>
-        </mat-card-content>
-        
-        <mat-card-content id="etelek">            
-            <table class="table table-dark">
-                <tbody>
-                    <tr>
-                        <td>Étel azonosító</td>
-                        <td>Mennyiség</td>
-                    </tr>
-                    <tr *ngFor="let etel of item.Etelek">
-                        <td>{{etel.EtelID}}</td>
-                        <td>{{etel.Mennyi}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </mat-card-content>
-
-        
-
-
-    </mat-card>
+    <table>
+        <tr>
+            <th><h1>Fogadott rendelések</h1>
+                <p style="padding-left: 70px;">Az étteremhez beérkezett a rendelésed, de még nem kezdték el csinálni</p>
+            </th>
+            <th><h1>Aktív rendelések</h1>
+                <p style="padding-left: 70px;">A rendelésedet épp készítik, vagy már át lett adva a futárnak</p>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <mat-card *ngFor="let item of fogadottRendelesek" class="card">
+                    <mat-card-header>
+                        <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
+                    </mat-card-header>
+            
+                    <mat-card-content>
+                        <table class="table table-dark" style="padding: 0px;">
+                            <tbody>
+                                <tr>
+                                    <td>Állapot</td>
+                                    <td>{{item.Allapot}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Szállítási mód</td>
+                                    <td>{{item.SzallitasiMod}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-card-content>
+                    
+                    <mat-card-content>
+                        <p style="margin-top: 10px;"> Ételek:</p>
+                    </mat-card-content>
+                    
+                    <mat-card-content id="etelek">            
+                        <table class="table table-dark">
+                            <tbody>
+                                <tr>
+                                    <td>Étel azonosító</td>
+                                    <td>Mennyiség</td>
+                                </tr>
+                                <tr *ngFor="let etel of item.Etelek">
+                                    <td>{{etel.EtelID}}</td>
+                                    <td>{{etel.Mennyi}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-card-content>
+            
+                    
+            
+            
+                </mat-card>
+            </td>
+            <td>
+                <mat-card *ngFor="let item of aktivRendelesek" class="card">
+                    <mat-card-header>
+                        <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
+                    </mat-card-header>
+            
+                    <mat-card-content>
+                        <table class="table table-dark" style="padding: 0px;">
+                            <tbody>
+                                <tr>
+                                    <td>Állapot</td>
+                                    <td>{{item.Allapot}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Szállítási mód</td>
+                                    <td>{{item.SzallitasiMod}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Várakozási idő</td>
+                                    <td>{{item.VarakozasiIdo}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-card-content>
+                    
+                    <mat-card-content>
+                        <p style="margin-top: 10px;"> Ételek:</p>
+                    </mat-card-content>
+                    
+                    <mat-card-content id="etelek">            
+                        <table class="table table-dark">
+                            <tbody>
+                                <tr>
+                                    <td>Étel azonosító</td>
+                                    <td>Mennyiség</td>
+                                </tr>
+                                <tr *ngFor="let etel of item.Etelek">
+                                    <td>{{etel.EtelID}}</td>
+                                    <td>{{etel.Mennyi}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-card-content>
+            
+                    
+            
+            
+                </mat-card>
+            </td>
+        </tr>
+    </table>
+   
+    
     <br><br><br><br>
 </div>

@@ -2,19 +2,17 @@
 
 <div class="bg">
     <h1>Beérkezett rendelések</h1>
-    {{kiszallitasraVaroRendelesekSzama}}
+
     <table style="width:100%">
         <tr>
 
             <th>Fogadott rendelések</th>
             <th>Elkészítés alatt</th>
-            <th>Kiszállításra vár</th>
-            <th>Kiszállítás alatt</th>
+            <th>Elvitelre vár</th>
             <!--<th>Befejezett rendelések</th>-->
             <!--így már nagyon sok nem fér ki, ez lehet valahol máshol pl külön menü item h befejezett rendelések?-->
 
         </tr>
-        
         <tr>
             <td>
                 <mat-card *ngFor="let item of fogadottRendelesek" class="card">
@@ -35,7 +33,7 @@
                                 </tr>
                                 <tr>
                                     <td>Várakozási idő</td>
-                                    <td><input [(ngModel)]="selectedVarIdoTomb[item.RendelesID]" (ngModelChange)="onVarIdoChange($event,item.RendelesID)" type="number" value={{item.VarakozasiIdo}}></td>
+                                    <td><input type="number" value={{item.VarakozasiIdo}}></td>
                                 </tr>
                                 <tr>
                                     <td>Prioritás</td>
@@ -145,8 +143,10 @@
 
                 </mat-card>
             </td>
+
             <td>
-                <mat-card *ngFor="let item of kiszallitasraVaroRendelesek" class="card">
+                <mat-card *ngFor="let item of elvitelreVaroRendelesek" class="card">
+                
                     <mat-card-header>
                         <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
                     </mat-card-header>
@@ -169,24 +169,17 @@
                                     <td>Prioritás</td>
                                     <td>{{item.Prioritas}}</td>
                                 </tr>
-                                <tr>
-                                    <td>Futár kiválasztása</td>
-                                    <td>                                        
-                                        <select class="form-control" id="futarSelect" [(ngModel)]="selectedFutar" (ngModelChange)="onFutarChange($event,item.RendelesID)">
-                                            <option value=""></option>
-                                            <option  *ngFor="let futar of futarok" [ngValue]="futar">{{futar.Nev}}</option>
-                                        </select>
-                                        <!-- {{selectedFutar | json}} ellenőrzés miatt-->
-                                    </td>
-                                   
                                 
-                                </tr>
                                 <tr>
                                     <td>Futár díja:</td>
                                     <td>{{item.FutarDij}}</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </mat-card-content>
+
+                    <mat-card-content>
+                        
                     </mat-card-content>
 
                     <mat-card-content>
@@ -208,78 +201,18 @@
                             </tbody>
                         </table>
                     </mat-card-content>
-                    <mat-card-content>
-                      <button type="button" class="btn btn-primary" (click)="futarnakAtadva(item)" [disabled]="futarKivalasztvaTomb[item.RendelesID]">Átadva a futárnak</button>
-                        <!-- itt kell az allapot megvaltozik -->
-                    </mat-card-content>
-                </mat-card>
 
+                    <mat-card-content>
+                        <button type="button" class="btn btn-primary" (click)=felveve(item)>A vendég felvette a csomagot</button>
+                        <!-- itt az allapot megvaltozik -->
+                    </mat-card-content>
+
+
+                </mat-card>
             </td>
+           
             
-            <td>
-                <mat-card *ngFor="let item of kiszallitasAlattRendelesek" class="card">
-                    <!-- *ngIf="item.Allapot='leadott rendeles??'" -->
-                    <mat-card-header>
-                        <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <table class="table table-dark" style="padding: 0px;">
-                            <tbody>
-                                <tr>
-                                    <td>Állapot</td>
-                                    <td>{{item.Allapot}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Szállítási mód</td>
-                                    <td>{{item.SzallitasiMod}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Várakozási idő</td>
-                                    <td>{{item.VarakozasiIdo}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Prioritás</td>
-                                    <td>{{item.Prioritas}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Hozzárendelt futár</td>
-                                    <td>{{item.FutarID}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Futár díja:</td>
-                                    <td>{{item.FutarDij}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </mat-card-content>
-
-                    <mat-card-content>
-                        <p style="margin-top: 10px;"> Ételek:</p>
-                    </mat-card-content>
-
-                    <mat-card-content id="etelek">
-                        <table class="table table-dark">
-                            <tbody>
-                                <tr>
-                                    <td>Étel azonosító</td>
-                                    <td>Mennyiség</td>
-                                </tr>
-
-                                <tr *ngFor="let etel of item.Etelek">
-                                    <td>{{etel.EtelID}}</td>
-                                    <td>{{etel.Mennyi}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </mat-card-content>
-
-                    <!--ha visszajelez a futár megvaltozik az allapot
-                    hogy kell frissiteni?-->
-                    
-
-
-                </mat-card>
-            </td>
+           
 
           
 
