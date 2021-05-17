@@ -58,8 +58,8 @@ void DBServer::GenerateUpdateString(const QVariantMap& map, QString &string)
 
     for (auto const& key: map.keys()) {
 
-        if (map.value(key).isNull())
-            continue;
+      //  if (map.value(key).isNull())
+        //    continue;
 
         string += " " + key+" = :" + key;
         if(map.lastKey()!=key){
@@ -1836,8 +1836,8 @@ void DBServer::queryUpdateRestaurantBasics(const QVariantMap &data, QString *mes
 
     //Adatok formázása - később egyszerűbb lesz velük dolgozni
     QVariantMap etterem;
-    etterem.insert("Email", data.value("Email"));
-    etterem.insert("Jelszo", data.value("Jelszo"));
+    //etterem.insert("Email", data.value("Email"));
+    //etterem.insert("Jelszo", data.value("Jelszo"));
     etterem.insert("Nev", data.value("Nev"));
     etterem.insert("Leiras", data.value("Leiras"));
     etterem.insert("Kep", data.value("Kep"));
