@@ -781,11 +781,6 @@ void DBServer::queryPlaceUserOrder(const QVariantMap &data, QString *message)
     int rendelesID = query.value(0).toInt();
     cout << "Kapott ID: " << rendelesID << endl;
 
-    query.prepare(str);
-    cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
-    if (!ExecuteQuery(query, message))
-        return;
-
     //----Kosár tábla---
     QVariantList etelID, mennyi;
     for (auto const& elem: etelek) {
@@ -814,11 +809,15 @@ void DBServer::queryPlaceUserOrder(const QVariantMap &data, QString *message)
     //FutarDij módosítás
     //(SUM(Mennyi * E.Ar)*E2.FutarReszesedes)/100+Szallitasi_ktsg
 
-    str = "UPDATE Rendeles R SET FutarDij = (SUM(Mennyi * E.Ar)*E2.FutarReszesedes)/100+Szallitasi_ktsg \
-            JOIN Kosar K on R.RendelesID = K.RendelesID \
-            JOIN Etel E on E.EtelID = K.EtelID \
-            JOIN Etterem E2 on E2.EtteremID = E.EtteremID \
-            WHERE RendelesID = "+ QString::number(rendelesID);
+    str = "UPDATE Rendeles SET FutarDij = (\
+            SELECT (SUM(Kosar.Mennyi * Etel.Ar)*Etterem.FutarReszesedes)/100+Szallitasi_ktsg as eredmeny \
+            FROM Rendeles \
+            JOIN Kosar on Rendeles.RendelesID = Kosar.RendelesID \
+            JOIN Etel on Etel.EtelID = Kosar.EtelID \
+            JOIN Etterem on Etterem.EtteremID = Etel.EtteremID \
+            WHERE Rendeles.RendelesID = "+ QString::number(rendelesID) +" \
+        ) \
+        WHERE RendelesID =" + QString::number(rendelesID);
 
     query.prepare(str);
     cout << "[DBServer] Query : " << query.lastQuery().toStdString() << endl;
