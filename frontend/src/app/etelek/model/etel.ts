@@ -10,7 +10,7 @@ export interface Etel{
         Nev: string
     },
     Ar: number,
-    Cimke: number[],
+    Cimke: string[],
     EtelID: number,
     Idoszak: {
         Befejezes: number,

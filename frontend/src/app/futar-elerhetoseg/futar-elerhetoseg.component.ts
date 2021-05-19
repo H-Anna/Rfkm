@@ -64,6 +64,7 @@ export class FutarElerhetosegComponent implements OnInit {
   }
 
   getMikorVallal() {
+    //itt value = inkább null legyen mert akkor nem tudja a 0-t kiválasztani de most annyira ez nem érdekel
     if (+this.form.get('hetfoKezd').value == 0 || +this.form.get('hetfoBefejez').value == 0 ) {
       this.vallaltNapok[0] = null;
     }

@@ -87,4 +87,12 @@ export class EtelService {
   getEtelek3(etteremId: number){
     return this.http.get<{Etelek: Etel[]}>(this.url+'/etterem/'+etteremId);
   }
+
+  etelModositasEsEtelekLekerese(etelAdatok, etteremId){
+    return this.http.post(this.url+'/etterem/etel/modositas',JSON.stringify(etelAdatok)).pipe(
+      switchMap( idk => {
+        return this.http.get<{Etelek: Etel[]}>(this.url+'/etterem/'+etteremId);
+      })
+    )
+  } 
 }

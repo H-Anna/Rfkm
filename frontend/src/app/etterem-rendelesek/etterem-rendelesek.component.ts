@@ -1,3 +1,4 @@
+import { element } from 'protractor';
 import { Rendeles } from './../vendeg-home/rendeles';
 import { CommunicatorService } from './../services/communicator.service';
 import { FutarService } from './../services/futar.service';
@@ -7,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { interval, fromEvent, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { utf8Encode } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'app-etterem-rendelesek',
@@ -21,7 +23,7 @@ export class EtteremRendelesekComponent implements OnInit {
 
   fogadottRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number, "Nev": string }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -33,7 +35,7 @@ export class EtteremRendelesekComponent implements OnInit {
 
   keszitesAlattRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number, "Nev": string  }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -45,7 +47,7 @@ export class EtteremRendelesekComponent implements OnInit {
 
   kiszallitasraVaroRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number, "Nev": string  }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -57,7 +59,7 @@ export class EtteremRendelesekComponent implements OnInit {
 
   kiszallitasAlattRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number, "Nev": string  }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -69,7 +71,7 @@ export class EtteremRendelesekComponent implements OnInit {
 
   befejezettRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number, "Nev": string  }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -81,40 +83,17 @@ export class EtteremRendelesekComponent implements OnInit {
 
 
 
-  constructor(private rendelesService: RendelesService, private activatedRoute: ActivatedRoute, private futarService: FutarService, private commService: CommunicatorService) {
-    console.log(this.futarKivalasztvaTomb);
+
+  
+  constructor(private rendelesService: RendelesService, private activatedRoute: ActivatedRoute) {
     this.activatedRoute.paramMap.subscribe(params => {
       console.log(params);
       this.etteremId = +params.get('etteremId');
     })
-    this.futarService.futarokListazasa().subscribe(response => {
-      this.futarok = response;
-      //console.log(response);
-      console.log(this.futarok);
-    })
+   
   }
 
-
-
-  futarok: { "Nev": string, "FutarID": number }[] = [];
-  nullFutar = { "Nev": null, "FutarID": null };
-  futarKivalasztva: boolean = false;
-  futarKivalasztvaTomb: boolean[] = [];
-  selectedFutarTomb: { "Nev": string, "FutarID": number }[] = [];
-  selectedFutar: { "Nev": string, "FutarID": number };
-  onFutarChange(futarObj,RendelesID) {
-    this.selectedFutar = futarObj;
-    this.selectedFutarTomb[RendelesID] = futarObj;
-    
-    if (futarObj != "" ) {
-      this.futarKivalasztvaTomb[RendelesID] = false;
-    }
-    else {
-      this.futarKivalasztvaTomb[RendelesID] = true;
-    }
-    console.log(this.selectedFutarTomb);
-    console.log(this.futarKivalasztvaTomb);
-  }
+  
 
   selectedVarIdoTomb: number[] = [];
   varIdoKivalasztvaTomb: boolean[] = [];
@@ -142,9 +121,7 @@ export class EtteremRendelesekComponent implements OnInit {
       }
       else if (element.Allapot == 'Kiszállításra vár' && element.SzallitasiMod!="Átvétel") {
         this.kiszallitasraVaroRendelesek.push(element);
-        this.kiszallitasraVaroRendelesekSzama++;
-        this.selectedFutarTomb[element.RendelesID] = null;
-        this.futarKivalasztvaTomb[element.RendelesID] = false;
+        ;
       }
       else if (element.Allapot == 'Kiszállítás alatt' && element.SzallitasiMod!="Átvétel") {
         this.kiszallitasAlattRendelesek.push(element);
@@ -153,23 +130,33 @@ export class EtteremRendelesekComponent implements OnInit {
         this.befejezettRendelesek.push(element);
       }
     });
-    console.log(this.selectedFutarTomb);
-    console.log(this.futarKivalasztvaTomb);
   }
 
-  futarokk(futarSzam:number){ //ennek kéne vmi jobb név
-    for (let index = 0; index < futarSzam; index++) {
-      
-      
-    }
-  }
+
 
 
   ngOnInit(): void {    
     this.rendelesService.etteremRendelesei(this.etteremId).subscribe(response => {
       this.ujratoltes(response);
-      this.futarokk(this.kiszallitasraVaroRendelesekSzama);
     });
+  }
+
+  futarChanged(event, item){
+    //console.log(eventargs);
+    //ide lehetne hogy output evemtbe visszaadja a futár id-ját és ha 0 akkor false
+    //ha nem akkor true és ehez bind-olni a gomb disabled-jét
+    console.log('2');
+    console.log(item);
+    /*this.rendelesService.etteremRendelesei(this.etteremId).subscribe(response => {
+      this.ujratoltes(response);
+    });*/
+    console.log('2');
+    console.log(item);
+    
+  }
+
+  idoChanged(){
+    
   }
 
   
@@ -223,6 +210,7 @@ export class EtteremRendelesekComponent implements OnInit {
   elkeszitve(item, id = this.etteremId) {  //ez ilyen default paraméter
     let adatok = {
       "RendelesID": item.RendelesID,
+      
       "Allapot": "Kiszállításra vár"
     }
     this.rendelesService.rendelesModositas(adatok, id).subscribe(response => {
@@ -236,7 +224,6 @@ export class EtteremRendelesekComponent implements OnInit {
   futarnakAtadva(item, id = this.etteremId) {
     let adatok = {
       "RendelesID": item.RendelesID,
-      "FutarID": this.selectedFutarTomb[item.RendelesID].FutarID,
       "Allapot": "Kiszállítás alatt"
     }
     console.log(adatok);

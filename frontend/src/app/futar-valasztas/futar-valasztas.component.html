@@ -1,0 +1,5 @@
+<select class="form-control" id="futarSelect" [(ngModel)]="kivalasztottFutarId">
+    <!--<option value="nullfutar"></option>-->
+    <option  *ngFor="let futar of futarok" [ngValue]="futar.FutarID">{{futar.Vnev}} {{futar.Knev}}</option>
+</select>
+<button class="btn btn-primary" (click)="kivalasztas()">OK</button>

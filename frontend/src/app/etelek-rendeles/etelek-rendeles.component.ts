@@ -32,7 +32,7 @@ export class EtelekRendelesComponent implements OnInit {
 
   form = new FormGroup({
     szallmod: new FormControl('',Validators.required),
-    fizmod: new FormControl()
+    fizmod: new FormControl('',Validators.required)
   });
 
 
@@ -74,6 +74,11 @@ export class EtelekRendelesComponent implements OnInit {
       "Etelek": etelek  
     }
     console.log(rendeles);
+    //reg. nélküli rendelés miatt
+    if(this.vendegId>1000){
+      this.openSnackBar("Sajnos ez a funkció még nem érhető el!","OK");
+      return;
+    }
     this.rendelesService.rendelesElkuldese(rendeles).subscribe(response => {
       if(response.Message=="OK"){
         this.visszairanyitas();

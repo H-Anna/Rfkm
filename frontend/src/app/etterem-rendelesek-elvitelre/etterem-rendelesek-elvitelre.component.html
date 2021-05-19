@@ -16,7 +16,7 @@
         <tr>
             <td>
                 <mat-card *ngFor="let item of fogadottRendelesek" class="card">
-                
+
                     <mat-card-header>
                         <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
                     </mat-card-header>
@@ -31,25 +31,16 @@
                                     <td>Szállítási mód</td>
                                     <td>{{item.SzallitasiMod}}</td>
                                 </tr>
-                                <tr>
-                                    <td>Várakozási idő</td>
-                                    <td><input type="number" value={{item.VarakozasiIdo}}></td>
-                                </tr>
-                                <tr>
-                                    <td>Prioritás</td>
-                                    <td>{{item.Prioritas}}</td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>Futár díja:</td>
-                                    <td>{{item.FutarDij}}</td>
-                                </tr>
                             </tbody>
                         </table>
+                        Várakozási idő megadása
+                        (alapértelmezetten 120 perc)
+                        <app-varakozasi-ido-megadasa [rendelesID]="item.RendelesID" (changeido)=idoChanged()>
+                        </app-varakozasi-ido-megadasa>
                     </mat-card-content>
 
                     <mat-card-content>
-                        
+
                     </mat-card-content>
 
                     <mat-card-content>
@@ -60,12 +51,12 @@
                         <table class="table table-dark">
                             <tbody>
                                 <tr>
-                                    <td>Étel azonosító</td>
+                                    <td>Étel neve</td>
                                     <td>Mennyiség</td>
                                 </tr>
 
                                 <tr *ngFor="let etel of item.Etelek">
-                                    <td>{{etel.EtelID}}</td>
+                                    <td>{{etel.Nev}}</td>
                                     <td>{{etel.Mennyi}}</td>
                                 </tr>
                             </tbody>
@@ -73,7 +64,8 @@
                     </mat-card-content>
 
                     <mat-card-content>
-                        <button type="button" class="btn btn-primary" (click)=elkeszitesElkezdese(item)>Elkészítés kezdése</button>
+                        <button type="button" class="btn btn-primary" (click)=elkeszitesElkezdese(item)>Elkészítés
+                            kezdése</button>
                         <!-- itt az allapot megvaltozik -->
                     </mat-card-content>
 
@@ -101,18 +93,6 @@
                                     <td>Várakozási idő</td>
                                     <td>{{item.VarakozasiIdo}}</td>
                                 </tr>
-                                <tr>
-                                    <td>Prioritás</td>
-                                    <td>{{item.Prioritas}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Hozzárendelt futár</td>
-                                    <td>{{item.FutarID}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Futár díja:</td>
-                                    <td>{{item.FutarDij}}</td>
-                                </tr>
                             </tbody>
                         </table>
                     </mat-card-content>
@@ -125,12 +105,12 @@
                         <table class="table table-dark">
                             <tbody>
                                 <tr>
-                                    <td>Étel azonosító</td>
+                                    <td>Étel neve</td>
                                     <td>Mennyiség</td>
                                 </tr>
 
                                 <tr *ngFor="let etel of item.Etelek">
-                                    <td>{{etel.EtelID}}</td>
+                                    <td>{{etel.Nev}}</td>
                                     <td>{{etel.Mennyi}}</td>
                                 </tr>
                             </tbody>
@@ -146,7 +126,7 @@
 
             <td>
                 <mat-card *ngFor="let item of elvitelreVaroRendelesek" class="card">
-                
+
                     <mat-card-header>
                         <mat-card-title>Rendelés azonosítója: {{item.RendelesID}}</mat-card-title>
                     </mat-card-header>
@@ -169,7 +149,7 @@
                                     <td>Prioritás</td>
                                     <td>{{item.Prioritas}}</td>
                                 </tr>
-                                
+
                                 <tr>
                                     <td>Futár díja:</td>
                                     <td>{{item.FutarDij}}</td>
@@ -179,7 +159,7 @@
                     </mat-card-content>
 
                     <mat-card-content>
-                        
+
                     </mat-card-content>
 
                     <mat-card-content>
@@ -190,12 +170,12 @@
                         <table class="table table-dark">
                             <tbody>
                                 <tr>
-                                    <td>Étel azonosító</td>
+                                    <td>Étel neve</td>
                                     <td>Mennyiség</td>
                                 </tr>
 
                                 <tr *ngFor="let etel of item.Etelek">
-                                    <td>{{etel.EtelID}}</td>
+                                    <td>{{etel.Nev}}</td>
                                     <td>{{etel.Mennyi}}</td>
                                 </tr>
                             </tbody>
@@ -203,18 +183,19 @@
                     </mat-card-content>
 
                     <mat-card-content>
-                        <button type="button" class="btn btn-primary" (click)=felveve(item)>A vendég felvette a csomagot</button>
+                        <button type="button" class="btn btn-primary" (click)=felveve(item)>A vendég felvette a
+                            csomagot</button>
                         <!-- itt az allapot megvaltozik -->
                     </mat-card-content>
 
 
                 </mat-card>
             </td>
-           
-            
-           
 
-          
+
+
+
+
 
 
 

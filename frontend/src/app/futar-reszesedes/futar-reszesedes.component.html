@@ -1,0 +1,13 @@
+<app-futar-home></app-futar-home>
+
+<div class="jumbotron">
+    <h1 class="display-4">Összes részesedés: {{reszesedesek.Osszesen}} Ft</h1>
+    <p class="lead">A listában láthatod az eddig beérkezett összeget rendelésekre lebontva.</p>
+    <hr class="my-4">
+
+</div>
+
+<ul class="list-group">
+    <li class="list-group-item" *ngFor="let r of reszesedesek.Rendelesek" style="font-size: large;">
+        Rendelés azonosító:{{r.RendelesID}} <br> Részesedés: {{r.FutarDij}} Ft</li>
+</ul>

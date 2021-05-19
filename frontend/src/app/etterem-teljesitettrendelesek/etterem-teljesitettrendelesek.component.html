@@ -1,7 +1,7 @@
 <app-etterem-home></app-etterem-home>
 
 <div class="bg">
-  <h1>Teljesített rendelesek</h1>
+  <h1>Teljesített rendelések</h1>
 
   <mat-card *ngFor="let item of teljesitettRendelesek" class="card">
     <mat-card-header>
@@ -23,17 +23,9 @@
             <td>Várakozási idő</td>
             <td>{{item.VarakozasiIdo}}</td>
           </tr>
-          <tr>
-            <td>Prioritás</td>
-            <td>{{item.Prioritas}}</td>
-          </tr>
-          <tr>
+          <tr *ngIf="item.SzallitasiMod=='Kiszállítás'">
             <td>Hozzárendelt futár</td>
             <td>{{item.FutarID}}</td>
-          </tr>
-          <tr>
-            <td>Futár díja:</td>
-            <td>{{item.FutarDij}}</td>
           </tr>
         </tbody>
       </table>
@@ -47,11 +39,11 @@
       <table class="table table-dark">
         <tbody>
           <tr>
-            <td>Étel azonosító</td>
+            <td>Étel neve</td>
             <td>Mennyiség</td>
           </tr>
           <tr *ngFor="let etel of item.Etelek">
-            <td>{{etel.EtelID}}</td>
+            <td>{{etel.Nev}}</td>
             <td>{{etel.Mennyi}}</td>
           </tr>
         </tbody>

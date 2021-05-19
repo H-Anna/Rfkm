@@ -12,10 +12,10 @@ export class EtteremTeljesitettrendelesekComponent implements OnInit {
 
   etteremId: number;
 
-  //itt olyannak kéne megjelennie azoknak a rendeleseknek ahol az allapot : kész rendelések
+  //itt olyannak kéne megjelennie azoknak a rendeleseknek ahol az allapot : befejezett rendelések
   teljesitettRendelesek: {
     "Allapot": string,
-      "Etelek": {"EtelID": number, "Mennyi":number}[],
+      "Etelek": {"EtelID": number, "Mennyi":number, "Nev":string}[],
       "FutarDij": number,
       "FutarID": number,
       "Prioritas": number,

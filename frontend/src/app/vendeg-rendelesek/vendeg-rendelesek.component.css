@@ -10,8 +10,27 @@ h1 {
 }
 
 .bg {
-    background: rgb(255,164,92);
-    background: linear-gradient(0deg, rgba(255,164,92,1) 0%, rgba(255,183,129,1) 19%, rgba(255,205,171,1) 42%, rgba(255,226,200,1) 62%, rgba(255,233,210,1) 80%, rgba(255,244,227,1) 100%);
+    /*background: rgb(255,164,92);*/
+    /*background: linear-gradient(0deg, rgba(255,164,92,1) 0%, rgba(255,183,129,1) 19%, rgba(255,205,171,1) 42%, rgba(255,226,200,1) 62%, rgba(255,233,210,1) 80%, rgba(255,244,227,1) 100%);*/
+    /* The image used */
+    background-image: url('../../assets/idk.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    
+    height: 100%;
+    margin: 0;
+
+
+    /* Full height */
+    height: 100%;
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    overflow-y:scroll;
+    overflow-x: hidden;
 }
 
 .table-dark{
@@ -55,11 +74,14 @@ label {
 }
 
 table{
-    width: 100%;
+    width: 80%;
+    margin: auto;
 }
 
 td{
     width: 50%;
+    margin: auto;
+    align-content: center;
 }
 
 
@@ -80,3 +102,18 @@ img {
     margin-left: auto;
     margin-right: auto;
 }
+
+myTheme {
+    background-color: rgba(0, 0, 0, 0.496);
+}
+
+.mat-tab-labels, .mat-tab-label, .mat-tab-link {
+    color: black;
+    font-size: 16px;
+    background-color: #804A71;
+  }
+  
+  .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar{
+    background: white;
+    height: 5px; 
+  }

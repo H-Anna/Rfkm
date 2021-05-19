@@ -10,12 +10,22 @@ export class FutarService {
 
   constructor(private http: HttpClient) { }
 
-  reszesedesModositasa(reszesedes){
-    return this.http.post<{Message: string}>(this.url+'/etterem/futarreszesedes/modositas',JSON.stringify(reszesedes));
+  reszesedesModositasa(reszesedes) {
+    return this.http.post<{ Message: string }>(this.url + '/etterem/futarreszesedes/modositas', JSON.stringify(reszesedes));
   }
 
-  futarokListazasa(){
-    return this.http.get<{"Nev": string, "FutarID": number}[]>(this.url+'/futarok');
+  futarokListazasa(adatok) {
+    return this.http.post<{ "Knev": string, "Vnev": string, "FutarID": number }[]>(this.url + '/futarok', JSON.stringify(adatok));
+  }
+
+  futarReszesedese(id) {
+    return this.http.get<{
+      "Osszesen": number,
+      "Rendelesek": {
+        "RendelesID": number,
+        "FutarDij": number
+      }[]
+    }>(this.url + '/futar/reszesedes/' + id);
   }
 
 }

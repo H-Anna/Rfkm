@@ -14,15 +14,47 @@ export class VendegRendelesekComponent implements OnInit {
 
   fogadottRendelesek: {
     "Allapot": string,
-    "Etelek": {"EtelID": number, "Mennyi":number}[],
+    "Etelek": {"EtelID": number, "Mennyi":number, "Nev": string}[],
     "FutarID": number,
     "RendelesID": number,
     "SzallitasiMod": number,
     "VarakozasiIdo": number
   }[] = [];
-  aktivRendelesek: {
+  keszitesAlattRendelesek: {
     "Allapot": string,
-    "Etelek": {"EtelID": number, "Mennyi":number}[],
+    "Etelek": {"EtelID": number, "Mennyi":number, "Nev": string}[],
+    "FutarID": number,
+    "RendelesID": number,
+    "SzallitasiMod": number,
+    "VarakozasiIdo": number
+  }[] = [];
+  szallitasraVaroRendelesek: {
+    "Allapot": string,
+    "Etelek": {"EtelID": number, "Mennyi":number, "Nev": string}[],
+    "FutarID": number,
+    "RendelesID": number,
+    "SzallitasiMod": number,
+    "VarakozasiIdo": number
+  }[] = [];
+  szallitasAlattRendelesek: {
+    "Allapot": string,
+    "Etelek": {"EtelID": number, "Mennyi":number, "Nev": string}[],
+    "FutarID": number,
+    "RendelesID": number,
+    "SzallitasiMod": number,
+    "VarakozasiIdo": number
+  }[] = [];
+  elvihetoRendelesek: {
+    "Allapot": string,
+    "Etelek": {"EtelID": number, "Mennyi":number, "Nev": string}[],
+    "FutarID": number,
+    "RendelesID": number,
+    "SzallitasiMod": number,
+    "VarakozasiIdo": number
+  }[] = [];
+  befejezettRendelesek: {
+    "Allapot": string,
+    "Etelek": {"EtelID": number, "Mennyi":number, "Nev": string}[],
     "FutarID": number,
     "RendelesID": number,
     "SzallitasiMod": number,
@@ -38,15 +70,31 @@ export class VendegRendelesekComponent implements OnInit {
 
   ngOnInit(): void {
     this.fogadottRendelesek=[];
-    this.aktivRendelesek=[];
+    this.keszitesAlattRendelesek=[];
+    this.szallitasraVaroRendelesek=[];
+    this.szallitasAlattRendelesek=[];
+    this.elvihetoRendelesek=[];
+    this.befejezettRendelesek=[];
     this.rendelesService.vendegRendelesei(this.vendegId).subscribe( response => {
       console.log(response);
       response.forEach(element => {
         if(element.Allapot=="Fogadva"){
           this.fogadottRendelesek.push(element);
         }
-        else {
-          this.aktivRendelesek.push(element);
+        else if (element.Allapot=="Elkészítés alatt") {
+          this.keszitesAlattRendelesek.push(element);
+        }
+        else if (element.Allapot=="Kiszállításra vár") {
+          this.szallitasraVaroRendelesek.push(element);
+        }
+        else if (element.Allapot=="Kiszállítás alatt") {
+          this.szallitasAlattRendelesek.push(element);
+        }
+        else if (element.Allapot=="Elvitelre vár") {
+          this.elvihetoRendelesek.push(element);
+        }
+        else if (element.Allapot=="Befejezett") {
+          this.befejezettRendelesek.push(element);
         }
       });
     })

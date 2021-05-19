@@ -14,18 +14,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RegisztracionelkulComponent implements OnInit {
 
-  // constructor(){}
-
-  // ngOnInit(){}
-
-  constructor(private service: EttermekListazasaService, private route: ActivatedRoute, private etelService: EtelService, private router: Router) { 
+  constructor(private service: EttermekListazasaService, private route: ActivatedRoute, private etelService: EtelService, private router: Router) {
     etelService.getEtteremCimkek().subscribe(response => {
-      this.etteremCimkek =  response.EtteremCimke;
+      this.etteremCimkek = response.EtteremCimke;
     })
   }
 
   form = new FormGroup({
-    irszam: new FormControl('',Validators.required),
+    irszam: new FormControl('', Validators.required),
     nev: new FormControl(),
     etteremCimke: new FormControl()
   });
@@ -34,18 +30,15 @@ export class RegisztracionelkulComponent implements OnInit {
   etteremCimkek: Kategoria[] = [];
   irszam: number;
   vendegId: number;
+
+  uniqueID() {
+    this.vendegId = Math.floor(Math.random() * Date.now())
+  }
+
   etteremId: number;
 
   ngOnInit(): void {
-
-    this.route.paramMap.subscribe(
-      params => {
-        //this.irszam = +params.get('irszam');
-        console.log(params);
-        /////////////////???????????????
-        //this.vendegId = +params.get('vendegId');
-      }
-    );
+    this.uniqueID();
   }
 
   submit(form) {
@@ -69,9 +62,10 @@ export class RegisztracionelkulComponent implements OnInit {
   }
 
 
-  // rendelInnen(id){
-  //   ///vendeg',vendegId,'ettermek',etteremId,'etelek'
-  //   this.router.navigate(['/vendeg', this.vendegId,'ettermek',id,'rendeles']);
-  // }
+  rendelInnen(id) {
+    ///vendeg',vendegId,'ettermek',etteremId,'etelek'
+    this.uniqueID();
+    this.router.navigate(['/vendeg', this.vendegId, 'ettermek', id, 'rendeles']);
+  }
 
 }

@@ -13,7 +13,7 @@ export class EtteremRendelesekElvitelreComponent implements OnInit {
 
   fogadottRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number,"Nev": string }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -25,7 +25,7 @@ export class EtteremRendelesekElvitelreComponent implements OnInit {
 
   keszitesAlattRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number,"Nev":string }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -37,7 +37,7 @@ export class EtteremRendelesekElvitelreComponent implements OnInit {
 
   elvitelreVaroRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number, "Nev":string }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -49,7 +49,7 @@ export class EtteremRendelesekElvitelreComponent implements OnInit {
 
   befejezettRendelesek: {
     "Allapot": string,
-    "Etelek": { "EtelID": number, "Mennyi": number }[],
+    "Etelek": { "EtelID": number, "Mennyi": number, "Nev":string }[],
     "FutarDij": number,
     "FutarID": number,
     "Prioritas": number,
@@ -130,6 +130,10 @@ export class EtteremRendelesekElvitelreComponent implements OnInit {
       console.log(response);
       this.ujratoltes(response);
     })
+  }
+
+  idoChanged(){
+    
   }
 
 

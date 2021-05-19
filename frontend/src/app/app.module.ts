@@ -29,6 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
 
 
 import { CommonModule } from '@angular/common';
@@ -48,6 +49,9 @@ import { VendegRendelesekComponent } from './vendeg-rendelesek/vendeg-rendelesek
 import { FutarRendelesekComponent } from './futar-rendelesek/futar-rendelesek.component';
 import { EtteremTeljesitettrendelesekComponent } from './etterem-teljesitettrendelesek/etterem-teljesitettrendelesek.component';
 import { RegisztracionelkulComponent } from './regisztracionelkul/regisztracionelkul.component';
+import { FutarValasztasComponent } from './futar-valasztas/futar-valasztas.component';
+import { VarakozasiIdoMegadasaComponent } from './varakozasi-ido-megadasa/varakozasi-ido-megadasa.component';
+import { FutarReszesedesComponent } from './futar-reszesedes/futar-reszesedes.component';
 
 
 @NgModule({
@@ -71,7 +75,10 @@ import { RegisztracionelkulComponent } from './regisztracionelkul/regisztracione
     FutarRendelesekComponent,
     EtteremTeljesitettrendelesekComponent,
     RegisztracionelkulComponent,
-    EtteremRendelesekElvitelreComponent
+    EtteremRendelesekElvitelreComponent,
+    FutarValasztasComponent,
+    VarakozasiIdoMegadasaComponent,
+    FutarReszesedesComponent
   ],
   imports: [
     CommonModule,
@@ -90,6 +97,7 @@ import { RegisztracionelkulComponent } from './regisztracionelkul/regisztracione
         MatMenuModule,
         MatCardModule,
         MatSnackBarModule,
+        MatTabsModule,
     RouterModule.forRoot([ 
       // which component should be displayed when the address changes to a certain path
 
@@ -107,11 +115,14 @@ import { RegisztracionelkulComponent } from './regisztracionelkul/regisztracione
       { path: 'vendeg/:vendegId/ettermek/:etteremId/rendeles', component: EtelekRendelesComponent, pathMatch: 'full'},
       { path: 'etterem/:etteremId/beallitasok', component: EtteremBeallitasokComponent, pathMatch: 'full'},
       { path: 'etterem/:etteremId/rendelesek', component: EtteremRendelesekComponent, pathMatch: 'full'},
+      { path: 'etterem/:etteremId/rendelesek/futarvalasztas', component: FutarValasztasComponent, pathMatch: 'full'},
       { path: 'futar/:futarId/modositas', component: FutarElerhetosegComponent, pathMatch: 'full' },
       { path: 'vendeg/:vendegId/rendelesek', component: VendegRendelesekComponent, pathMatch: 'full'},
       { path: 'futar/:futarId/rendelesek', component: FutarRendelesekComponent, pathMatch: 'full'},
       { path: 'etterem/:etteremId/teljesitettrendelesek', component: EtteremTeljesitettrendelesekComponent , pathMatch: 'full'},      
       { path: 'etterem/:etteremId/rendelesekelvitelre', component: EtteremRendelesekElvitelreComponent , pathMatch: 'full'},
+      { path: 'futar/:futarId/reszesedes', component: FutarReszesedesComponent, pathMatch: 'full' },
+      { path: 'regisztracionelkul', component: RegisztracionelkulComponent},    
       
 
      

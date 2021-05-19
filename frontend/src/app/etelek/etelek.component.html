@@ -50,11 +50,12 @@
       </select>
 
 
-      <label for="akcio">Akció</label><br>
+      <!--ehez már nincs kedvem-->
+      <!--<label for="akcio">Akció</label><br>
       <select id="akcio" formControlName="akcio" class="form-control">
         <option></option>
         <option *ngFor="let item of akciok" [value]="item.AkcioID">{{item.Nev}}</option>
-      </select>
+      </select>-->
 
       <br>
       <h6>Ha ez az étel egész nap elérhető, hagyd ki ezeket a mezőket</h6>
@@ -96,19 +97,25 @@
       <p>Leírás: {{item.Leiras}}</p>
     </mat-card-content>
 
-    <mat-card-content>
+    <mat-card-content style="font-size: large;"> <!--ha akciós-->
       <p *ngIf="item.Akcio.Ertek!=null" style="text-decoration-line: line-through;">{{item.Ar}} Ft</p>
+      <p *ngIf="item.Akcio.Ertek!=null" style="background-color: red; width: fit-content;">Akció: {{item.Akcio.Ertek}} %</p>
+      <p *ngIf="item.Akcio.Ertek!=null" style="background-color: red; width: fit-content"> {{item.Ar*(1-(0.01*(item.Akcio.Ertek)))}} Ft</p>
+      
+    </mat-card-content>
+
+    <mat-card-content style="font-size: large;">  <!--ha nem akciós-->
       <p *ngIf="item.Akcio.Ertek==null">{{item.Ar}} Ft</p>
     </mat-card-content>
 
+
     <mat-card-content>
-      <p>Akció:</p>
+      <p>Akció módosítása:</p>
       <select [(ngModel)]="selectedAkcioID" (change)="selectedAkcioChanged()" name="akcio" id="akcio" class="form-control">
-        <option></option>
+        <option [value]='-1' selected>Nincs akció</option>
         <option *ngFor="let akcio of akciok" [value]="akcio.AkcioID" >{{akcio.Nev}}: {{akcio.Ertek}}%          
         </option>
       </select>
-      {{selectedAkcioID }}
       <button class="btn btn-primary" (click)=etelModositasaAkcioval(item) >Akció hozzáadása</button>
       
     </mat-card-content>

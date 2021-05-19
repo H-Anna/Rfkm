@@ -73,7 +73,7 @@
                     <option value="Kiszállítás">Kiszállítás</option>
                     <option value="Átvétel">Személyes átvétel</option>
                 </select><br>
-                <button type="submit" class="btn btn-primary" (click)="rendelesElkuldese()">Rendelés elküldése</button>
+                <button type="submit" class="btn btn-primary" (click)="rendelesElkuldese()" [disabled]="!form.valid">Rendelés elküldése</button>
             </form>
         </div>
 
